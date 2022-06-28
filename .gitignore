@@ -1,1 +1,5 @@
 /env
+/data/
+__pycache__
+/java/_temp/
+/java/out/
