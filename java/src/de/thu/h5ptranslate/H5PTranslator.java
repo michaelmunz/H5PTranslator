@@ -12,19 +12,14 @@ public interface H5PTranslator {
     List<String> getModifiedElementIDs();
 
     int getNrOfSlides();
-    int getNrOfElementsForSlide(int slideNr);
 
-    List<Element> getElementsForSlide_original(int slideNr);
-    List<Element> getElementsForSlide_translate(int slideNr);
+    List<Element> getElementsForSlide_original(int nrSlide);
+    List<Element> getElementsForSlide_translate(int nrSlide);
 
     String getTemporaryDir_original();
     String getTemporaryDir_translate();
 
     void setTranslation(String id, String text_translated);
-
-
-
-
 
 
 }

@@ -3,3 +3,5 @@
 __pycache__
 /java/_temp/
 /java/out/
+*$py.class
+*$py.class

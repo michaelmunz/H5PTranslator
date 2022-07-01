@@ -22,7 +22,7 @@ public class Main {
         h5ptrans.open("C:\\Users\\micha\\Desktop\\H5PTranslator\\data\\course-presentation-36_DE.h5p", "C:\\Users\\micha\\Desktop\\H5PTranslator\\data\\course-presentation-36_EN.h5p");
         System.out.println("Nr of slides: "+h5ptrans.getNrOfSlides());
         int slideNr = 1;
-        System.out.println("Nr of elements for slide 1: "+h5ptrans.getNrOfElementsForSlide(slideNr));
+        System.out.println("Nr of elements for slide 1: "+h5ptrans.getElementsForSlide_original(slideNr).size());
         List<Element> elList = h5ptrans.getElementsForSlide_original(slideNr);
         //System.out.println("Text of first element of slide 1: "+elList.get(0).getText());
 
@@ -31,11 +31,6 @@ public class Main {
 
         h5ptrans.setTranslation(untranslated_element_ids.get(0), "This is an english test for the first id!");
         h5ptrans.close(true);
-
-
-
-
-
 
     }
 }

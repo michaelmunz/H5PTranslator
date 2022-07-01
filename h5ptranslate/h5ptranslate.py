@@ -6,7 +6,12 @@ import zipfile
 import os
 import hashlib
 
-from h5ptranslate.temporary_directory import TemporaryDirectory
+
+##########################################################
+# switch  import if running in python!!!
+#from h5ptranslate.temporary_directory import TemporaryDirectory
+from temporary_directory import TemporaryDirectory
+##########################################################
 
 from de.thu.h5ptranslate import H5PTranslator
 from de.thu.h5ptranslate import Element
