@@ -1,4 +1,4 @@
-package de.thu.h5paccess;
+package de.thu.h5ptranslate;
 
 public interface Element{
     int getX();
@@ -8,6 +8,9 @@ public interface Element{
     String getText();
     String getContentName();
     String getFile();
+
+    String getID();
+    String getHash();
 
 
 }
