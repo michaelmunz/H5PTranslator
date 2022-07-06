@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.target=StartMTP
+comment0.text=\r\n\ main-Methode\ zu\ MTP\r\n\ @author\ HG\r\n\ @version\ 29.05.2022\r\n
+comment1.params=args
+comment1.target=void\ main(java.lang.String[])
+comment2.params=
+comment2.target=void\ run()
+numComments=3

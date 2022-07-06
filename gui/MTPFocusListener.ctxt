@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.target=MTPFocusListener
+comment0.text=\r\n\ Beschreiben\ Sie\ hier\ die\ Klasse\ MTPFocusListener.\r\n\ \r\n\ @author\ HG\ \r\n\ @version\ 29.05.2022\r\n
+comment1.params=t\ tf1\ tf2
+comment1.target=void\ add(MTPText,\ MTPTextField,\ MTPTextField)
+comment2.params=e
+comment2.target=void\ focusGained(java.awt.event.FocusEvent)
+comment3.params=e
+comment3.target=void\ focusLost(java.awt.event.FocusEvent)
+numComments=4

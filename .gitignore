@@ -5,3 +5,4 @@ __pycache__
 /java/out/
 *$py.class
 *$py.class
+*.class

@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.target=MTPFrame
+comment0.text=\r\n\ Die\ MTP-GUI\r\n\ \r\n\ @author\ HG\r\n\ @version\ 29.05.2022\r\n
+comment1.params=
+comment1.target=MTPFrame()
+comment2.params=tf
+comment2.target=MTPFrame(MTPPanelText[])
+numComments=3

@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=MTPText
+comment0.text=\r\n\ Beschreiben\ Sie\ hier\ die\ Klasse\ MTPText.\r\n\ \r\n\ @author\ HG\r\n\ @version\ 29.05.2022\r\n
+comment1.params=
+comment1.target=java.lang.String\ getOrig()
+comment1.text=\r\n\ Konstruktor\ f\u00FCr\ Objekte\ der\ Klasse\ MTPText\r\n
+comment2.params=
+comment2.target=java.lang.String\ getTrans()
+comment3.params=s
+comment3.target=MTPText(java.lang.String)
+comment4.params=s1\ s2
+comment4.target=MTPText(java.lang.String,\ java.lang.String)
+numComments=5
