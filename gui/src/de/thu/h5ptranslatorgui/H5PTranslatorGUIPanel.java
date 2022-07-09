@@ -1,3 +1,5 @@
+package de.thu.h5ptranslatorgui;
+
 import javax.swing.*;
 
 /**
@@ -6,9 +8,9 @@ import javax.swing.*;
  * @author HG
  * @version 30.5.2022
  */
-public class MTPPanel extends JPanel
+public class H5PTranslatorGUIPanel extends JPanel
 {
-    MTPPanel() {
+    H5PTranslatorGUIPanel() {
          setLayout (new BoxLayout(this, BoxLayout.X_AXIS));
     }
 }

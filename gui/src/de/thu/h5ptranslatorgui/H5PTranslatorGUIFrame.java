@@ -1,6 +1,6 @@
+package de.thu.h5ptranslatorgui;
+
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
 
 /**
  * Die MTP-GUI
@@ -8,13 +8,13 @@ import java.awt.event.*;
  * @author HG
  * @version 29.05.2022
  */
-public class MTPFrame extends JFrame 
+public class H5PTranslatorGUIFrame extends JFrame
 {
-    MTPFrame() {
-        this(new MTPPanelText[0]);
+    H5PTranslatorGUIFrame() {
+        this(new H5PTranslatorGUIPanelText[0]);
     }
     
-    MTPFrame(MTPPanelText[] tf) {
+    H5PTranslatorGUIFrame(H5PTranslatorGUIPanelText[] tf) {
         // Create a new JFrame container.
         super("MedTec+");         
 

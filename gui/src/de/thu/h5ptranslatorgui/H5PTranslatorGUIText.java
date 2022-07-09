@@ -1,10 +1,6 @@
-/**
- * Beschreiben Sie hier die Klasse MTPText.
- * 
- * @author HG
- * @version 29.05.2022
- */
-public class MTPText
+package de.thu.h5ptranslatorgui;
+
+public class H5PTranslatorGUIText
 {
     private String orig, trans;
 
@@ -19,11 +15,11 @@ public class MTPText
         return trans;
     }
     
-    public MTPText(String s)
+    public H5PTranslatorGUIText(String s)
     {
         orig = s;
     }
-    public MTPText(String s1, String s2)
+    public H5PTranslatorGUIText(String s1, String s2)
     {
         this(s1);
         trans = s2;
