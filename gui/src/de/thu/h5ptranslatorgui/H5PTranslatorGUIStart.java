@@ -9,16 +9,14 @@ import javax.swing.SwingUtilities;
  */
 public class H5PTranslatorGUIStart
 {
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         // Create the frame on the event dispatching thread.
-        SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    H5PTranslatorGUIText t1 = new H5PTranslatorGUIText("Hello", "Hallo"),
-                    t2 = new H5PTranslatorGUIText("world!", "Welt");
+        SwingUtilities.invokeLater(() -> {
+            H5PTranslatorGUIText t1 = new H5PTranslatorGUIText("Hello", "Hallo"),
+            t2 = new H5PTranslatorGUIText("world!", "Welt");
 
-                    H5PTranslatorGUIPanelText[] tf = {new H5PTranslatorGUIPanelText(t1), new H5PTranslatorGUIPanelText(t2)};
-                    new H5PTranslatorGUIFrame(tf);
-                }
-            });
+            H5PTranslatorGUIPanelText[] tf = {new H5PTranslatorGUIPanelText(t1), new H5PTranslatorGUIPanelText(t2)};
+            new H5PTranslatorGUIFrame();
+        });
     }
 }

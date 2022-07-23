@@ -10,35 +10,21 @@ import javax.swing.*;
  */
 public class H5PTranslatorGUIFrame extends JFrame
 {
+
     H5PTranslatorGUIFrame() {
-        this(new H5PTranslatorGUIPanelText[0]);
-    }
-    
-    H5PTranslatorGUIFrame(H5PTranslatorGUIPanelText[] tf) {
         // Create a new JFrame container.
         super("MedTec+");         
 
-       setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-       JTextField t =new JTextField("MTP rules");
-       add(t);
-       
-       for (int i = 0; i < tf.length; i++) {
-            add(tf[i]);
-            // Die Buttons müssen erzeugt, mit einem ActionListener versehen
-            // und eingefügt werden.
-           /* sp[i] = new Button();
-            sp[i].setLabel(Integer.toString(i+1));
-            sp[i].setBackground(Color.LIGHT_GRAY);
-            sp[i].addActionListener(al);
-            add(sp[i]); */
-        }
-        
-        // Terminate the program when the user closes the application.
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+       setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
+       add (new H5PTranslatorGUINavigation());
+       add (new H5PTranslatorGUITranslate());
+       add (new H5PTranslatorGUICoordinates());
+
+       // Terminate the program when the user closes the application.
+       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Display the frame.
-        pack();
+        setSize(800,600);
         setVisible(true);
     }
 }
