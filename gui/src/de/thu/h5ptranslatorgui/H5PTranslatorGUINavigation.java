@@ -5,24 +5,25 @@ import java.awt.*;
 
 public class H5PTranslatorGUINavigation extends JPanel {
     H5PTranslatorGUINavigation() {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setSize(100,600);
+        setBackground(Color.GRAY);
+        GridLayout l = new GridLayout(20,1);
+        l.setVgap(10);
+        setLayout(l);
 
         JPanel pm = new JPanel();
-        pm.setLayout(new BoxLayout(pm, BoxLayout.X_AXIS));
         pm.add(new Button("+"));
         pm.add(new Button("-"));
+        pm.setBackground(Color.GRAY);
         add(pm);
 
-        add(new JLabel("-"));
         Button b = new Button("Slide 1");
-        b.setBackground(Color.lightGray);
         add(b);
-        add(new JLabel("-"));
         add(new Button("Slide 2"));
-        add(new JLabel("-"));
         add(new Button("Slide 3"));
-        add(new JLabel("-"));
+        JLabel j = new JLabel("");
+        j.setBackground(b.getBackground());
+        add(j); add(j);
+        b.setBackground(Color.lightGray);
 
         add(new Button("Save"));
         add(new Button("Reload"));

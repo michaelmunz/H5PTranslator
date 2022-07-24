@@ -1,6 +1,7 @@
 package de.thu.h5ptranslatorgui;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Die MTP-GUI
@@ -12,19 +13,34 @@ public class H5PTranslatorGUIFrame extends JFrame
 {
 
     H5PTranslatorGUIFrame() {
-        // Create a new JFrame container.
-        super("MedTec+");         
+        super("MedTec+");
 
-       setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
-       add (new H5PTranslatorGUINavigation());
-       add (new H5PTranslatorGUITranslate());
-       add (new H5PTranslatorGUICoordinates());
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.add(new JMenu("File"));
+        menuBar.add(new JMenu("Edit"));
+        menuBar.add(new JMenu("Navigate"));
+        menuBar.add(new JMenu("Tools"));
+        setJMenuBar(menuBar);
 
-       // Terminate the program when the user closes the application.
-       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JPanel pLeft = new JPanel();
+        pLeft.setBackground(Color.GRAY);
+        pLeft.add(new H5PTranslatorGUINavigation());
 
-        // Display the frame.
-        setSize(800,600);
+        JPanel pRight = new JPanel();
+        pRight.setBackground(Color.GRAY);
+        pRight.add(new H5PTranslatorGUITranslate());
+
+        JSplitPane pSplit = new JSplitPane();
+        pSplit.setDividerLocation(0.25);
+        pSplit.setDividerSize(1);
+        pSplit.add(pLeft, JSplitPane.LEFT);
+        pSplit.add(pRight, JSplitPane.RIGHT);
+        add(pSplit);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        setResizable(false);
+        setSize(1200,800);
         setVisible(true);
     }
 }
