@@ -78,9 +78,17 @@ class ElementImpl(Element):
         result = hashlib.md5(text.encode()).hexdigest()
         return result
 
-    def mergeElement(self, e):
-        self.setText(e.getText())
-        self.setHash(e.getHash())
+    def set_data_to_merge(self, merge_data):
+        self.setText(merge_data["text"])
+        self.setHash(merge_data["hash"])
+        self.setX(merge_data["x"])
+        self.setY(merge_data["y"])
+        self.setWidth(merge_data["width"])
+        self.setHeight(merge_data["height"])
+
+
+    def get_data_to_merge(self):
+        return {"text": self.getText(), "hash": self.getHash(), "x": self.getX(), "y": self.getY(), "width" : self.getWidth(), "height": self.getHeight()}
 
 
 class H5PAccessImpl():
@@ -138,18 +146,20 @@ class H5PAccessImpl():
             self.elements_of_slide.append(elements_of_slide)
 
 
-    def mergeData(self, content, translated_elementIDs):
-        self.content = content
+    def mergeData(self, new_content, translated_elementIDs):
+        # get the data to merge from the current file
+        merge_data = {}
+        for id in translated_elementIDs:
+            merge_data[id] = self.getElementByID(id).get_data_to_merge()
+
+        # content of translated file is re-parsed with content from "original" file
+        self.content = copy.deepcopy(new_content)
         self.parseData()
 
-        temp_access = H5PAccessImpl()
-        temp_access.open(self.path)
-
+        # replace any already translated element by the previous translation from the temporary merge file
         for id in translated_elementIDs:
-            e = temp_access.getElementByID(id)
-            own_element = self.getElementByID(e.getID)
-            own_element.merge(e)
-        temp_access.close(False)
+            self.getElementByID(id).set_data_to_merge(merge_data[id])
+
 
     def getTempDir(self):
         return self.tempdir.getPath()
