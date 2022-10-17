@@ -9,8 +9,8 @@ import hashlib
 
 ##########################################################
 # switch  import if running in python!!!
-#from h5ptranslate.temporary_directory import TemporaryDirectory
-from temporary_directory import TemporaryDirectory
+from h5ptranslate.temporary_directory import TemporaryDirectory
+#from temporary_directory import TemporaryDirectory
 ##########################################################
 
 from de.thu.h5ptranslate import H5PTranslator
@@ -67,10 +67,12 @@ class ElementImpl(Element):
         self.getMetaData()['h5pt.hash'] = hash
 
 
-    def isTextModified(self):
-        hash_ori = self.getHash()
+    def isTextModified(self, el_translated):
         hash_current = self.calculateHash(self.getText())
-        return hash_ori != hash_current
+        hash_translated = el_translated.getHash()
+        if hash_translated is None:
+            return False
+        return hash_translated != hash_current
 
 
     def calculateHash(self, text):
@@ -100,8 +102,8 @@ class H5PAccessImpl():
         self.content_path = None
         self.tempdir = None
 
-    def open(self, path):
-        self.tempdir = TemporaryDirectory()
+    def open(self, path, postfix):
+        self.tempdir = TemporaryDirectory(postfix)
         self.path = path
 
         with zipfile.ZipFile(self.path, 'r') as zip_ref:
@@ -174,8 +176,11 @@ class H5PAccessImpl():
             with open(self.content_path, 'w') as jsonFile:
                 json.dump(self.content, jsonFile)
 
-        shutil.make_archive(self.path, 'zip', self.getTempDir())
-        self.tempdir.close()
+            shutil.make_archive(self.path, 'zip', self.getTempDir())
+            shutil.move(self.path, self.path+".bak")
+            shutil.move(self.path+".zip", self.path)
+        # TODO wieder einbauen!!
+        #self.tempdir.close()
 
 
 
@@ -189,8 +194,10 @@ class H5PTranslatorImpl(H5PTranslator):
 
 
         # initialize accessors (data is not yet parsed). Files are opened and data is read
-        self.access_ori.open(ori_file)
-        self.access_translate.open(translate_file)
+        self.access_ori.open(ori_file, 'ori')
+        if not os.path.exists(translate_file):
+            shutil.copyfile(ori_file, translate_file)
+        self.access_translate.open(translate_file, 'translate')
 
         # Afterwards,parse data
         self.access_ori.parseData()
@@ -230,7 +237,13 @@ class H5PTranslatorImpl(H5PTranslator):
         ori_el = self.access_ori.getAllElements()
 
         for e in ori_el.values():
-            if e.isTextModified():
+            # fetch corresponding element from translated data
+            e_trans = self.access_translate.getElementByID(e.getID())
+            # if no translated element has been found: ignore
+            if e_trans is None:
+                continue
+            # if hashes do not match: add to modified ids
+            if e.isTextModified(e_trans):
                 modified_ids.append(e.getID())
         return modified_ids
 
@@ -255,7 +268,7 @@ class H5PTranslatorImpl(H5PTranslator):
         el = self.access_translate.getElementByID(id)
         el.setText(text_translated)
         ori_text = self.access_ori.getElementByID(id).getText()
-        hash = el.calculateHash(ori_text)
-        el.setHash(hash)
+        hash_str = el.calculateHash(ori_text)
+        el.setHash(hash_str)
 
 
