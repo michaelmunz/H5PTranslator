@@ -9,11 +9,12 @@ class TemporaryDirectory:
     tempdir_root = os.path.abspath(".")
     temp_prefix = '_temp.h5p.'
 
-    def __init__(self):
-        self.name = os.path.join(TemporaryDirectory.tempdir_root, TemporaryDirectory.temp_prefix +str(uuid.uuid1()))
+    def __init__(self, postfix):
+        self.name = os.path.join(TemporaryDirectory.tempdir_root, TemporaryDirectory.temp_prefix +str(uuid.uuid1())+"_"+postfix)
         os.makedirs(self.name)
 
     def __del__(self):
+        # TODO wieder einbauen!!
         #self.close()
         pass
 
