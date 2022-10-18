@@ -42,6 +42,18 @@ class ElementImpl(Element):
     def setText(self, text):
         self.data['action']['params']['text'] = text
 
+    def setX(self, val):
+        self.data['x'] = val
+
+    def setY(self, val):
+        self.data['y'] = val
+
+    def setWidth(self, val):
+        self.data['width'] = val
+
+    def setHeight(self, val):
+        self.data['height'] = val
+
     def getContentName(self):
         return self.data.get('contentName', '')
 
