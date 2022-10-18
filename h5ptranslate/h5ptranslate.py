@@ -9,8 +9,9 @@ import hashlib
 
 ##########################################################
 # switch  import if running in python!!!
-#from h5ptranslate.temporary_directory import TemporaryDirectory
-from temporary_directory import TemporaryDirectory
+from h5ptranslate import auto_translate
+from h5ptranslate.temporary_directory import TemporaryDirectory
+#from temporary_directory import TemporaryDirectory
 ##########################################################
 
 from de.thu.h5ptranslate import H5PTranslator
@@ -41,6 +42,18 @@ class ElementImpl(Element):
     def setText(self, text):
         self.data['action']['params']['text'] = text
 
+    def setX(self, val):
+        self.data['x'] = val
+
+    def setY(self, val):
+        self.data['y'] = val
+
+    def setWidth(self, val):
+        self.data['width'] = val
+
+    def setHeight(self, val):
+        self.data['height'] = val
+
     def getContentName(self):
         return self.data.get('contentName', '')
 
@@ -67,10 +80,12 @@ class ElementImpl(Element):
         self.getMetaData()['h5pt.hash'] = hash
 
 
-    def isTextModified(self):
-        hash_ori = self.getHash()
+    def isTextModified(self, el_translated):
         hash_current = self.calculateHash(self.getText())
-        return hash_ori != hash_current
+        hash_translated = el_translated.getHash()
+        if hash_translated is None:
+            return False
+        return hash_translated != hash_current
 
 
     def calculateHash(self, text):
@@ -78,9 +93,17 @@ class ElementImpl(Element):
         result = hashlib.md5(text.encode()).hexdigest()
         return result
 
-    def mergeElement(self, e):
-        self.setText(e.getText())
-        self.setHash(e.getHash())
+    def set_data_to_merge(self, merge_data):
+        self.setText(merge_data["text"])
+        self.setHash(merge_data["hash"])
+        self.setX(merge_data["x"])
+        self.setY(merge_data["y"])
+        self.setWidth(merge_data["width"])
+        self.setHeight(merge_data["height"])
+
+
+    def get_data_to_merge(self):
+        return {"text": self.getText(), "hash": self.getHash(), "x": self.getX(), "y": self.getY(), "width" : self.getWidth(), "height": self.getHeight()}
 
 
 class H5PAccessImpl():
@@ -92,8 +115,8 @@ class H5PAccessImpl():
         self.content_path = None
         self.tempdir = None
 
-    def open(self, path):
-        self.tempdir = TemporaryDirectory()
+    def open(self, path, postfix):
+        self.tempdir = TemporaryDirectory(postfix)
         self.path = path
 
         with zipfile.ZipFile(self.path, 'r') as zip_ref:
@@ -138,18 +161,20 @@ class H5PAccessImpl():
             self.elements_of_slide.append(elements_of_slide)
 
 
-    def mergeData(self, content, translated_elementIDs):
-        self.content = content
+    def mergeData(self, new_content, translated_elementIDs):
+        # get the data to merge from the current file
+        merge_data = {}
+        for id in translated_elementIDs:
+            merge_data[id] = self.getElementByID(id).get_data_to_merge()
+
+        # content of translated file is re-parsed with content from "original" file
+        self.content = copy.deepcopy(new_content)
         self.parseData()
 
-        temp_access = H5PAccessImpl()
-        temp_access.open(self.path)
-
+        # replace any already translated element by the previous translation from the temporary merge file
         for id in translated_elementIDs:
-            e = temp_access.getElementByID(id)
-            own_element = self.getElementByID(e.getID)
-            own_element.merge(e)
-        temp_access.close(False)
+            self.getElementByID(id).set_data_to_merge(merge_data[id])
+
 
     def getTempDir(self):
         return self.tempdir.getPath()
@@ -164,8 +189,11 @@ class H5PAccessImpl():
             with open(self.content_path, 'w') as jsonFile:
                 json.dump(self.content, jsonFile)
 
-        shutil.make_archive(self.path, 'zip', self.getTempDir())
-        self.tempdir.close()
+            shutil.make_archive(self.path, 'zip', self.getTempDir())
+            shutil.move(self.path, self.path+".bak")
+            shutil.move(self.path+".zip", self.path)
+        # TODO wieder einbauen!!
+        #self.tempdir.close()
 
 
 
@@ -174,13 +202,15 @@ class H5PTranslatorImpl(H5PTranslator):
         self.access_ori = H5PAccessImpl()
         self.access_translate = H5PAccessImpl()
         TemporaryDirectory.cleanup_tempdirs()
+        self.auto_translator = auto_translate.GoogleTrans()
+
 
     def open(self, ori_file, translate_file):
-
-
         # initialize accessors (data is not yet parsed). Files are opened and data is read
-        self.access_ori.open(ori_file)
-        self.access_translate.open(translate_file)
+        self.access_ori.open(ori_file, 'ori')
+        if not os.path.exists(translate_file):
+            shutil.copyfile(ori_file, translate_file)
+        self.access_translate.open(translate_file, 'translate')
 
         # Afterwards,parse data
         self.access_ori.parseData()
@@ -220,9 +250,21 @@ class H5PTranslatorImpl(H5PTranslator):
         ori_el = self.access_ori.getAllElements()
 
         for e in ori_el.values():
-            if e.isTextModified():
+            # fetch corresponding element from translated data
+            e_trans = self.access_translate.getElementByID(e.getID())
+            # if no translated element has been found: ignore
+            if e_trans is None:
+                continue
+            # if hashes do not match: add to modified ids
+            if e.isTextModified(e_trans):
                 modified_ids.append(e.getID())
         return modified_ids
+
+    def getElementByID_original(self, id):
+        return self.access_ori.getElementByID(id)
+
+    def getElementByID_translate(self, id):
+        return self.acces_translate.getElementByID(id)
 
 
     def getNrOfSlides(self):
@@ -245,7 +287,16 @@ class H5PTranslatorImpl(H5PTranslator):
         el = self.access_translate.getElementByID(id)
         el.setText(text_translated)
         ori_text = self.access_ori.getElementByID(id).getText()
-        hash = el.calculateHash(ori_text)
-        el.setHash(hash)
+        hash_str = el.calculateHash(ori_text)
+        el.setHash(hash_str)
 
 
+    def getAutoTranslation(self, source_language, target_language, text):
+        return self.auto_translator.translate(source_language, target_language, text)
+
+    def setTranslatedImages(self, image_path):
+        files = os.listdir(image_path)
+        for f in files:
+            dest = os.path.join(self.access_translate.getTempDir(), 'content', 'images', f)
+            src = os.path.join(image_path, f)
+            shutil.copyfile(src, dest)

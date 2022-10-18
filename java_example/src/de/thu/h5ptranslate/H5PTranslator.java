@@ -16,10 +16,16 @@ public interface H5PTranslator {
     List<Element> getElementsForSlide_original(int nrSlide);
     List<Element> getElementsForSlide_translate(int nrSlide);
 
+    Element getElementByID_original(int id);
+    Element getElementByID_translate(int id);
+
     String getTemporaryDir_original();
     String getTemporaryDir_translate();
 
     void setTranslation(String id, String text_translated);
 
+    String getAutoTranslation(String source_language, String target_language, String text);
+
+    void setTranslatedImages(String image_path);
 
 }
