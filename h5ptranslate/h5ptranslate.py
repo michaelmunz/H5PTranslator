@@ -206,8 +206,6 @@ class H5PTranslatorImpl(H5PTranslator):
 
 
     def open(self, ori_file, translate_file):
-
-
         # initialize accessors (data is not yet parsed). Files are opened and data is read
         self.access_ori.open(ori_file, 'ori')
         if not os.path.exists(translate_file):
@@ -296,3 +294,9 @@ class H5PTranslatorImpl(H5PTranslator):
     def getAutoTranslation(self, source_language, target_language, text):
         return self.auto_translator.translate(source_language, target_language, text)
 
+    def setTranslatedImages(self, image_path):
+        files = os.listdir(image_path)
+        for f in files:
+            dest = os.path.join(self.access_translate.getTempDir(), 'content', 'images', f)
+            src = os.path.join(image_path, f)
+            shutil.copyfile(src, dest)
