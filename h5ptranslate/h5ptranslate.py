@@ -9,6 +9,7 @@ import hashlib
 
 ##########################################################
 # switch  import if running in python!!!
+from h5ptranslate import auto_translate
 from h5ptranslate.temporary_directory import TemporaryDirectory
 #from temporary_directory import TemporaryDirectory
 ##########################################################
@@ -189,6 +190,8 @@ class H5PTranslatorImpl(H5PTranslator):
         self.access_ori = H5PAccessImpl()
         self.access_translate = H5PAccessImpl()
         TemporaryDirectory.cleanup_tempdirs()
+        self.auto_translator = auto_translate.GoogleTrans()
+
 
     def open(self, ori_file, translate_file):
 
@@ -271,4 +274,7 @@ class H5PTranslatorImpl(H5PTranslator):
         hash_str = el.calculateHash(ori_text)
         el.setHash(hash_str)
 
+
+    def auto_translate(self, source_language, target_language, text):
+        return self.auto_translator.translate(source_language, target_language, text)
 

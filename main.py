@@ -3,8 +3,8 @@ import os
 from h5ptranslate.h5ptranslate import H5PTranslator, H5PTranslatorImpl
 
 h5ptrans = H5PTranslatorImpl()
-ori_file = os.path.abspath(r"./data/course-presentation-58.h5p")
-translate_file = os.path.abspath(r"./data/course-presentation-58_EN.h5p")
+ori_file = os.path.abspath(r"./data/Medical Device Regulation - overview.h5p")
+translate_file = os.path.abspath(r"./data/Medical Device Regulation - overview_EN.h5p")
 
 h5ptrans.open(ori_file, translate_file)
 
