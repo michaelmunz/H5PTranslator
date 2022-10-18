@@ -262,6 +262,12 @@ class H5PTranslatorImpl(H5PTranslator):
                 modified_ids.append(e.getID())
         return modified_ids
 
+    def getElementByID_original(self, id):
+        return self.access_ori.getElementByID(id)
+
+    def getElementByID_translate(self, id):
+        return self.acces_translate.getElementByID(id)
+
 
     def getNrOfSlides(self):
         return self.access_ori.getNrOfSlides()
@@ -287,6 +293,6 @@ class H5PTranslatorImpl(H5PTranslator):
         el.setHash(hash_str)
 
 
-    def auto_translate(self, source_language, target_language, text):
+    def getAutoTranslation(self, source_language, target_language, text):
         return self.auto_translator.translate(source_language, target_language, text)
 
