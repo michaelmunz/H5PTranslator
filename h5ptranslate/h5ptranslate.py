@@ -61,23 +61,37 @@ class ElementImpl(Element):
         return self.data.get('file', '')
 
     def getID(self):
-        return self.getMetaData().get('h5pt.id', None)
+        return self.getMetaData('h5pt.id')
 
 
-    def getMetaData(self):
-        return self.data['action']['metadata']
+    def getMetaData(self, key):
+        metadatastr = self.data['action']['metadata'].get('authorComments', "{}")
+        metadata = json.loads(metadatastr)
+        return metadata.get(key, None)
+
+    def setMetaData(self, key, value):
+        metadatastr = self.data['action']['metadata'].get('authorComments', "{}")
+        metadata = json.loads(metadatastr)
+        metadata[key] = value
+        jsonstr = json.dumps(metadata)
+        self.data['action']['metadata']['authorComments'] = jsonstr
+
+
 
     def getHash(self):
-        return self.getMetaData().get('h5pt.hash', None)
+        return self.getMetaData('h5pt.hash')
 
     def verifyID(self):
         id = self.getID()
         if id == None:
             id = str(uuid.uuid1())
-            self.getMetaData()['h5pt.id'] = id
+            self.setMetaData('h5pt.id', id)
 
     def setHash(self, hash):
-        self.getMetaData()['h5pt.hash'] = hash
+        self.setMetaData('h5pt.hash', hash)
+
+
+
 
 
     def isTextModified(self, el_translated):
