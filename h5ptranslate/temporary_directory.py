@@ -14,8 +14,6 @@ class TemporaryDirectory:
         os.makedirs(self.name)
 
     def __del__(self):
-        # TODO wieder einbauen!!
-        #self.close()
         pass
 
     def getPath(self):

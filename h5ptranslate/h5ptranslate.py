@@ -6,11 +6,11 @@ import zipfile
 import os
 import hashlib
 
-
 ##########################################################
 # switch  import if running in python!!!
 from h5ptranslate import auto_translate
 from h5ptranslate.temporary_directory import TemporaryDirectory
+from h5ptranslate import zip_h5p
 #from temporary_directory import TemporaryDirectory
 ##########################################################
 
@@ -188,12 +188,10 @@ class H5PAccessImpl():
             #  write modified json data into file
             with open(self.content_path, 'w') as jsonFile:
                 json.dump(self.content, jsonFile)
-
-            shutil.make_archive(self.path, 'zip', self.getTempDir())
             shutil.move(self.path, self.path+".bak")
-            shutil.move(self.path+".zip", self.path)
-        # TODO wieder einbauen!!
-        #self.tempdir.close()
+            zip_h5p.zip_as_h5p(self.path, self.getTempDir())
+        # comment only for testing purposes
+        self.tempdir.close()
 
 
 
@@ -292,6 +290,8 @@ class H5PTranslatorImpl(H5PTranslator):
 
 
     def getAutoTranslation(self, source_language, target_language, text):
+        if text == "":
+            return text
         return self.auto_translator.translate(source_language, target_language, text)
 
     def setTranslatedImages(self, image_path):
