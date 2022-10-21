@@ -6,14 +6,9 @@ import zipfile
 import os
 import hashlib
 
-##########################################################
-# switch  import if running in python!!!
-from h5ptranslate.temporary_directory import TemporaryDirectory
-from h5ptranslate import auto_translate
-from h5ptranslate import zip_h5p
-#from temporary_directory import TemporaryDirectory
-##########################################################
-
+from h5p_python.temporary_directory import TemporaryDirectory
+from h5p_python import auto_translate
+from h5p_python import zip_h5p
 from de.thu.h5ptranslate import H5PTranslator
 from de.thu.h5ptranslate import Element
 
@@ -214,7 +209,7 @@ class H5PTranslatorImpl(H5PTranslator):
         self.access_ori = H5PAccessImpl()
         self.access_translate = H5PAccessImpl()
         TemporaryDirectory.cleanup_tempdirs()
-        self.auto_translator = auto_translate.GoogleTrans()
+        self.auto_translator = auto_translate.GoogleTransProxy()
 
 
     def open(self, ori_file, translate_file):
