@@ -30,12 +30,19 @@ class ElementImpl(Element):
         return self.data.get('height', '')
 
     def getText(self):
-        action = self.data['action']
-        params = action['params']
-        return params.get('text', '')
+        text = self.data['action']['params'].get('text', None)
+        if text is None:
+            text = self.data['action']['params'].get('question', '')
+
+        return text
 
     def setText(self, text):
-        self.data['action']['params']['text'] = text
+        cur_text = self.data['action']['params'].get('text', None)
+        if cur_text is None:
+            self.data['action']['params']['question'] = text
+        else:
+            self.data['action']['params']['text'] = text
+
 
     def setX(self, val):
         self.data['x'] = val
@@ -61,11 +68,13 @@ class ElementImpl(Element):
 
     def getMetaData(self, key):
         metadatastr = self.data['action']['metadata'].get('authorComments', "{}")
+        metadatastr = metadatastr.replace("&quot;", '"')
         metadata = json.loads(metadatastr)
         return metadata.get(key, None)
 
     def setMetaData(self, key, value):
         metadatastr = self.data['action']['metadata'].get('authorComments', "{}")
+        metadatastr = metadatastr.replace("&quot;", '"')
         metadata = json.loads(metadatastr)
         metadata[key] = value
         jsonstr = json.dumps(metadata)
