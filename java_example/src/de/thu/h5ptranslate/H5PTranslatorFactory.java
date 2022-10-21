@@ -1,6 +1,7 @@
 package de.thu.h5ptranslate;
 
 import org.python.core.PyObject;
+import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
 
 public class H5PTranslatorFactory {
@@ -9,7 +10,7 @@ public class H5PTranslatorFactory {
 
     public H5PTranslatorFactory() {
         PythonInterpreter interpreter = new PythonInterpreter();
-        interpreter.exec("from h5ptranslate.h5ptranslate import H5PTranslatorImpl");
+        interpreter.exec("from h5p_python.h5ptranslate import H5PTranslatorImpl");
         h5ptranslateClass = interpreter.get("H5PTranslatorImpl");
     }
 

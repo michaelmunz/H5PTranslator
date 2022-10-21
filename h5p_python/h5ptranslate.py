@@ -8,8 +8,8 @@ import hashlib
 
 ##########################################################
 # switch  import if running in python!!!
-from h5ptranslate import auto_translate
 from h5ptranslate.temporary_directory import TemporaryDirectory
+from h5ptranslate import auto_translate
 from h5ptranslate import zip_h5p
 #from temporary_directory import TemporaryDirectory
 ##########################################################

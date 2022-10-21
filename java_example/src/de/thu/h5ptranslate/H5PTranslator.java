@@ -16,8 +16,8 @@ public interface H5PTranslator {
     List<Element> getElementsForSlide_original(int nrSlide);
     List<Element> getElementsForSlide_translate(int nrSlide);
 
-    Element getElementByID_original(int id);
-    Element getElementByID_translate(int id);
+    Element getElementByID_original(String id);
+    Element getElementByID_translate(String id);
 
     String getTemporaryDir_original();
     String getTemporaryDir_translate();
