@@ -1,13 +1,11 @@
 package de.thu.h5ptranslatorgui;
 
-import de.thu.h5ptranslate.Element;
 import de.thu.h5ptranslate.H5PTranslator;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.List;
 
 public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
 
@@ -22,15 +20,13 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
         setLayout(new GridLayout2(4,6, 15, 10));
         setSize(1280,1024);
         setBackground(Color.GRAY);
-
+/*
         int nrOfSlides = h5ptrans.getNrOfSlides(), slideNr = 1;
         int nrOfElements = h5ptrans.getElementsForSlide_original(slideNr).size();
         List<Element> origList = h5ptrans.getElementsForSlide_original(slideNr);
-        List<Element> transList = h5ptrans.getElementsForSlide_translate(slideNr);
+        List<Element> transList = h5ptrans.getElementsForSlide_translate(slideNr); */
 
         tAddHeader();
-
-
 
         // System.out.println("Text of first element of slide 1: "+elList.get(0).getText());
         // java.util.List<String> untranslated_element_ids = h5ptrans.getUntranslatedElementIDs();
@@ -40,13 +36,14 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
 
        // for (int i=0; i < nrOfElements; i++)
        //    tAdd(new String[] { origList.get(i).getID() , transList.get(i).getText(), "aaa","23.56","4.234"});
-       //  tAdd(new String[] {"511",origList.get(0).getText(),"aaa","6.41","477.4"});
-        // tAdd(new String[] { "111", "Hello", "Hallo","23.56","4.234"});
+         tAdd(new String[] {"511","aaa", " <body text = \"blue\" bgcolor = \"green\">\n" +
+                 "      <p>Use different color names for for body and table and see the result.</p> </body>","6.41","477.4"});
+         tAdd(new String[] { "111", "Hello", "Hallo","23.56","4.234"});
         tAdd(new String[] {"41235","World","Welt","3.641","40.24"});
     }
 
     static int[] widthColumns = {50, 300, 300, 80, 100, 100};
-    static int heightColumns = 100;
+    static int heightColumns = 50;
 
     private void increaseCounter() {
         counterComponents++;
@@ -89,7 +86,7 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
         tAdd("id");
         tAdd("English");
         tAdd("German");
-        tAdd("DeepL");
+        tAdd("Google Translator");
         tAdd("x-coordinate");
         tAdd("y-coordinate");
     }

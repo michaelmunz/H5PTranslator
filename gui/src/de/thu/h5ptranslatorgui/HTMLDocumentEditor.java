@@ -26,7 +26,7 @@ import java.io.*;
 
 public class HTMLDocumentEditor extends JFrame implements ActionListener {
 
-    private HTMLDocument document;
+   private HTMLDocument document;
     private JTextPane textPane = new JTextPane();
     private final boolean debug = false;
     private File currentFile;
@@ -410,6 +410,7 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
         HTMLEditorKit editorKit = new HTMLEditorKit();
         document = (HTMLDocument) editorKit.createDefaultDocument();
         textPane.setDocument(document);
+        textPane.setText(jtf.getText());
         currentFile = null;
         setTitle("HTMLDocumentEditor");
         textPane.getDocument().addUndoableEditListener(undoHandler);
@@ -508,7 +509,12 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
         String exitMessage = "Are you sure you want to exit?";
         if (JOptionPane.showConfirmDialog(this, exitMessage) == JOptionPane.YES_OPTION) {
             try {
-                jtf.setText(document.getText(0, document.getLength()));
+                StringWriter writer = new StringWriter();
+                (new HTMLEditorKit()).write(writer, document, 0, document.getLength());
+                String str = writer.toString();
+                // String str = content.getString(0, content.length() - 1);
+                // jtf.setText(document.getText(0, document.getLength()));
+                jtf.setText(str);
                 jtf.setBackground(Color.WHITE);
             } catch (Exception e) {
                 System.err.print(e);

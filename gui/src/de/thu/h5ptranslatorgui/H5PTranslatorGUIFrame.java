@@ -35,10 +35,13 @@ public class H5PTranslatorGUIFrame extends JFrame
          H5PTranslatorFactory factory = new H5PTranslatorFactory();
          H5PTranslator h5ptrans = factory.create();
 
+         System.out.println("Anfang vom Öffnen");
          // initialize the accessor
-         h5ptrans.open("C:\\Users\\gross\\Documents\\GitHub\\H5PTranslator\\course-presentation-36_DE.h5p", "C:\\Users\\gross\\Documents\\GitHub\\H5PTranslator\\course-presentation-36_EN.h5p");
+         // h5ptrans.open("C:\\Users\\gross\\Documents\\GitHub\\H5PTranslator\\course-presentation-36_DE.h5p", "C:\\Users\\gross\\Documents\\GitHub\\H5PTranslator\\course-presentation-36_EN.h5p");
+         System.out.println("Ende vom Öffnen");
 
-        JMenuBar menuBar = new JMenuBar();
+
+         JMenuBar menuBar = new JMenuBar();
         menuBar.add(new JMenu("File"));
         menuBar.add(new JMenu("Edit"));
         menuBar.add(new JMenu("Navigate"));
@@ -63,7 +66,8 @@ public class H5PTranslatorGUIFrame extends JFrame
        // setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
          addWindowListener(new java.awt.event.WindowAdapter() {
              public void windowClosing(java.awt.event.WindowEvent e) {
-                 h5ptrans.close(false);
+                 System.out.println("Der Anfang vom Ende");
+                // h5ptrans.close(false);
                  System.exit(0);
              }
          });
