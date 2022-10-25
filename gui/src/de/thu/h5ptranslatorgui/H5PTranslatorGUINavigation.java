@@ -23,7 +23,7 @@ public class H5PTranslatorGUINavigation extends JPanel {
         JLabel j = new JLabel("");
         j.setBackground(b.getBackground());
         add(j); add(j);
-        b.setBackground(Color.lightGray);
+        b.setBackground(Color.PINK);
 
         add(new Button("Save"));
         add(new Button("Reload"));
