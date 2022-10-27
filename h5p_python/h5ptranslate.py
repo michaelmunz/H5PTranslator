@@ -2,7 +2,7 @@ import copy
 import json
 import shutil
 import uuid
-import zipfile
+import h5p_python.zipfile2 as zip
 import os
 import hashlib
 
@@ -137,8 +137,8 @@ class H5PAccessImpl():
         self.tempdir = TemporaryDirectory(postfix)
         self.path = path
 
-        with zipfile.ZipFile(self.path, 'r') as zip_ref:
-            zip_ref.extractall(self.tempdir.name)
+        with zip.ZipFile(self.path, 'r') as zip_ref:
+            zip_ref.extract('content/content.json', self.tempdir.name)
 
         self.content_path = os.path.join(self.tempdir.name, "content/content.json")
         with open(self.content_path, 'r') as jsonFile:
@@ -206,11 +206,20 @@ class H5PAccessImpl():
             #  write modified json data into file
             with open(self.content_path, 'w') as jsonFile:
                 json.dump(self.content, jsonFile)
-            shutil.move(self.path, self.path+".bak")
-            zip_h5p.zip_as_h5p(self.path, self.getTempDir())
+            with zip.ZipFile(self.path, 'a') as zipObj:
+                zipObj.remove('content/content.json')
+                zipObj.write(self.content_path, 'content/content.json')
+
+
         # comment only for testing purposes
         self.tempdir.close()
 
+
+    def replaceImage(self, file):
+        with zip.ZipFile(self.path, 'a') as zipObj:
+            filename = 'content/images/'+os.path.basename(file)
+            zipObj.remove(filename)
+            zipObj.write(file, filename)
 
 
 class H5PTranslatorImpl(H5PTranslator):
@@ -315,6 +324,4 @@ class H5PTranslatorImpl(H5PTranslator):
     def setTranslatedImages(self, image_path):
         files = os.listdir(image_path)
         for f in files:
-            dest = os.path.join(self.access_translate.getTempDir(), 'content', 'images', f)
-            src = os.path.join(image_path, f)
-            shutil.copyfile(src, dest)
+            self.access_translate.replaceImage(f)
