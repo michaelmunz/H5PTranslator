@@ -17,16 +17,28 @@ class ElementImpl(Element):
         self.data = data
 
     def getX(self):
-        return self.data.get('x', '')
+        val = self.data.get('x', None)
+        if val is not None:
+            val = float(val)
+        return val
 
     def getY(self):
-        return self.data.get('y', '')
+        val = self.data.get('y', None)
+        if val is not None:
+            val = float(val)
+        return val
 
     def getWidth(self):
-        return self.data.get('width', '')
+        val = self.data.get('width', None)
+        if val is not None:
+            val = float(val)
+        return val
 
     def getHeight(self):
-        return self.data.get('height', '')
+        val = self.data.get('height', None)
+        if val is not None:
+            val = float(val)
+        return val
 
     def getText(self):
         text = self.data['action']['params'].get('text', None)
@@ -44,16 +56,16 @@ class ElementImpl(Element):
 
 
     def setX(self, val):
-        self.data['x'] = val
+        self.data['x'] = str(val)
 
     def setY(self, val):
-        self.data['y'] = val
+        self.data['y'] = str(val)
 
     def setWidth(self, val):
-        self.data['width'] = val
+        self.data['width'] = str(val)
 
     def setHeight(self, val):
-        self.data['height'] = val
+        self.data['height'] = str(val)
 
     def getContentName(self):
         return self.data.get('contentName', '')

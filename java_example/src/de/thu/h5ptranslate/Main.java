@@ -27,6 +27,10 @@ public class Main {
         List<Element> elList = h5ptrans.getElementsForSlide_original(slideNr);
         //System.out.println("Text of first element of slide 1: "+elList.get(0).getText());
 
+        Element aktElement = elList.get(0);
+        System.out.println(aktElement.getX());
+
+
         List<String> untranslated_element_ids = h5ptrans.getUntranslatedElementIDs();
         System.out.println("We have "+untranslated_element_ids.size()+" untranslated elements.");
 
