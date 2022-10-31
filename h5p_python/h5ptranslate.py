@@ -2,13 +2,12 @@ import copy
 import json
 import shutil
 import uuid
-import h5p_python.zipfile2 as zip
 import os
 import hashlib
 
 from h5p_python.temporary_directory import TemporaryDirectory
-from h5p_python import auto_translate
-from h5p_python import zip_h5p
+from h5p_python import zip_proxy
+from h5p_python import translate_proxy
 from de.thu.h5ptranslate import H5PTranslator
 from de.thu.h5ptranslate import Element
 
@@ -108,7 +107,7 @@ class ElementImpl(Element):
 
     def calculateHash(self, text):
         # convert to byte and calculate hash
-        result = hashlib.md5(text.encode()).hexdigest()
+        result = hashlib.md5(text.encode('utf-8')).hexdigest()
         return result
 
     def set_data_to_merge(self, merge_data):
@@ -132,13 +131,14 @@ class H5PAccessImpl():
         self.content = None
         self.content_path = None
         self.tempdir = None
+        self.zip_proxy = zip_proxy.ZipProxy()
+
 
     def open(self, path, postfix):
         self.tempdir = TemporaryDirectory(postfix)
         self.path = path
 
-        with zip.ZipFile(self.path, 'r') as zip_ref:
-            zip_ref.extract('content/content.json', self.tempdir.name)
+        self.zip_proxy.extract(self.path, 'content/content.json', self.tempdir.name)
 
         self.content_path = os.path.join(self.tempdir.name, "content/content.json")
         with open(self.content_path, 'r') as jsonFile:
@@ -206,9 +206,7 @@ class H5PAccessImpl():
             #  write modified json data into file
             with open(self.content_path, 'w') as jsonFile:
                 json.dump(self.content, jsonFile)
-            with zip.ZipFile(self.path, 'a') as zipObj:
-                zipObj.remove('content/content.json')
-                zipObj.write(self.content_path, 'content/content.json')
+            self.zip_proxy.replace(self.path, 'content/content.json', self.content_path)
 
 
         # comment only for testing purposes
@@ -216,10 +214,8 @@ class H5PAccessImpl():
 
 
     def replaceImage(self, file):
-        with zip.ZipFile(self.path, 'a') as zipObj:
-            filename = 'content/images/'+os.path.basename(file)
-            zipObj.remove(filename)
-            zipObj.write(file, filename)
+        filename = 'content/images/' + os.path.basename(file)
+        self.zip_proxy.replace(self.path, filename, file)
 
 
 class H5PTranslatorImpl(H5PTranslator):
@@ -227,7 +223,7 @@ class H5PTranslatorImpl(H5PTranslator):
         self.access_ori = H5PAccessImpl()
         self.access_translate = H5PAccessImpl()
         TemporaryDirectory.cleanup_tempdirs()
-        self.auto_translator = auto_translate.GoogleTransProxy()
+        self.auto_translator = translate_proxy.GoogleTransProxy()
 
 
     def open(self, ori_file, translate_file):
