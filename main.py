@@ -23,6 +23,7 @@ print("Modified ids (%d): %s" %(len(modified_ids), str(modified_ids)))
 print("Untranslated ids (%d): %s" %(len(untranslated_ids), str(untranslated_ids)))
 #h5ptrans.setTranslation(untranslated_ids[0], "Das ist ein deutscher Text für die erste ID!")
 
+untranslated_ids = []
 for id in untranslated_ids:
     elem = h5ptrans.getElementByID_original(id)
     print("Autotranslating id '{}': '{}'".format(id, elem.getText()))
