@@ -1,11 +1,13 @@
 package de.thu.h5ptranslatorgui;
 
+import de.thu.h5ptranslate.Element;
 import de.thu.h5ptranslate.H5PTranslator;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.List;
 
 public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
 
@@ -13,64 +15,57 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
     boolean htmlDocumentEditorShown = false;
     H5PTranslator h5ptrans;
 
+    static int[] widthColumns = {250, 310, 310, 80, 100, 100};
+    static int heightColumns = 50;
+
     H5PTranslatorGUITranslate(H5PTranslator h5ptrans) {
 
         this.h5ptrans = h5ptrans;
 
-        setLayout(new GridLayout2(4,6, 15, 10));
-        setSize(1280,1024);
-        setBackground(Color.GRAY);
-/*
-        int nrOfSlides = h5ptrans.getNrOfSlides(), slideNr = 1;
+        int slideNr = 1;
         int nrOfElements = h5ptrans.getElementsForSlide_original(slideNr).size();
         List<Element> origList = h5ptrans.getElementsForSlide_original(slideNr);
-        List<Element> transList = h5ptrans.getElementsForSlide_translate(slideNr); */
+        List<Element> transList = h5ptrans.getElementsForSlide_translate(slideNr);
+
+        int nrRows = nrOfElements+1;
+        setLayout(new GridLayout2(nrRows, 6, 15, 10));
+
+        // setSize(1920, 1080);
+        setBackground(Color.GRAY);
 
         tAddHeader();
-
-        // System.out.println("Text of first element of slide 1: "+elList.get(0).getText());
-        // java.util.List<String> untranslated_element_ids = h5ptrans.getUntranslatedElementIDs();
-        // System.out.println("We have "+untranslated_element_ids.size()+" untranslated elements.");
-        // h5ptrans.setTranslation(untranslated_element_ids.get(0), "This is an english test for the first id!");
-
-
-       // for (int i=0; i < nrOfElements; i++)
-       //    tAdd(new String[] { origList.get(i).getID() , transList.get(i).getText(), "aaa","23.56","4.234"});
-         tAdd(new String[] {"511","aaa", " <body text = \"blue\" bgcolor = \"green\">\n" +
-                 "      <p>Use different color names for for body and table and see the result.</p> </body>","6.41","477.4"});
-         tAdd(new String[] { "111", "Hello", "Hallo","23.56","4.234"});
-        tAdd(new String[] {"41235","World","Welt","3.641","40.24"});
+        for (int i = 0; i < nrOfElements; i++) {
+            Element aktElement = origList.get(i);
+            tAdd(new String[]{aktElement.getID(),
+                    aktElement.getText(),
+                    transList.get(i).getText(),
+                    "2",
+                    "3"});
+        }
     }
-
-    static int[] widthColumns = {50, 300, 300, 80, 100, 100};
-    static int heightColumns = 50;
 
     private void increaseCounter() {
         counterComponents++;
         if (counterComponents == 6)
             counterComponents = 0;
     }
-    static int counterComponents = 0;
-    private void tAdd (String s) {
+
+    int counterComponents = 0;
+
+    private void tAdd(String s) {
         JLabel c = new JLabel(s);
         tAdd(c);
     }
-    private void tAdd (Component c) {
-        c.setPreferredSize(new Dimension(widthColumns[counterComponents],heightColumns));
+
+    private void tAdd(Component c) {
+        c.setPreferredSize(new Dimension(widthColumns[counterComponents], heightColumns));
         add(c);
         increaseCounter();
     }
 
-    private void tAdd (String[] s) {
+    private void tAdd(String[] s) {
         tAdd(s[0]);
-/*
-        int k = s[1].length();
-        if (k > 9) {
-            tAdd(s[1].substring(0, 10));
-            System.out.println(s[1].substring(0, 10));
-        }
-        else  */
-           tAdd(s[1]);
+        tAdd(s[1]);
 
         JTextField j = new JTextField(s[2]);
         j.addFocusListener(this);
@@ -82,7 +77,7 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
         tAdd(s[4]);
     }
 
-    private void tAddHeader () {
+    private void tAddHeader() {
         tAdd("id");
         tAdd("English");
         tAdd("German");
@@ -109,7 +104,8 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
 
     @Override
     public void focusLost(FocusEvent e) {
-
+        JTextField j = (JTextField) e.getComponent();
+        j.setBackground(null);
     }
 }
 

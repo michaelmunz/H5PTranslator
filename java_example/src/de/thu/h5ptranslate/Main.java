@@ -20,7 +20,8 @@ public class Main {
         H5PTranslator h5ptrans = factory.create();
 
         // initialize the accessor
-        h5ptrans.open("C:\\Users\\micha\\THU\\H5PTranslator\\data\\course-presentation-36.h5p", "C:\\Users\\micha\\THU\\H5PTranslator\\data\\course-presentation-36_DE.h5p");
+        h5ptrans.open("C:\\Users\\gross\\Documents\\GitHub\\H5PTranslator\\course-presentation-36_EN.h5p", "C:\\Users\\gross\\Documents\\GitHub\\H5PTranslator\\course-presentation-36_DE.h5p");
+       // h5ptrans.open("C:\\Users\\micha\\THU\\H5PTranslator\\data\\course-presentation-36.h5p", "C:\\Users\\micha\\THU\\H5PTranslator\\data\\course-presentation-36_DE.h5p");
         System.out.println("Nr of slides: "+h5ptrans.getNrOfSlides());
         int slideNr = 1;
         System.out.println("Nr of elements for slide 1: "+h5ptrans.getElementsForSlide_original(slideNr).size());
