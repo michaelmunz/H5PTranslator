@@ -150,9 +150,13 @@ class H5PAccessImpl():
         self.tempdir = TemporaryDirectory(postfix)
         self.path = path
 
-        self.zip_proxy.extract(self.path, 'content/content.json', self.tempdir.name)
-
-        self.content_path = os.path.join(self.tempdir.name, "content/content.json")
+        if path.endswith(".json"):
+            self.content_path = os.path.join(self.tempdir.name, "content/content.json")
+            os.makedirs(os.path.dirname(self.content_path))
+            shutil.copyfile(self.path, self.content_path)
+        else:
+            self.zip_proxy.extract(self.path, 'content/content.json', self.tempdir.name)
+            self.content_path = os.path.join(self.tempdir.name, "content/content.json")
         with open(self.content_path, 'r') as jsonFile:
             self.content = json.load(jsonFile)
 
@@ -218,7 +222,10 @@ class H5PAccessImpl():
             #  write modified json data into file
             with open(self.content_path, 'w') as jsonFile:
                 json.dump(self.content, jsonFile)
-            self.zip_proxy.replace(self.path, 'content/content.json', self.content_path)
+            if self.content_path.endswith(".json"):
+                shutil.copyfile(self.content_path, self.path)
+            else:
+                self.zip_proxy.replace(self.path, 'content/content.json', self.content_path)
 
 
         # comment only for testing purposes
