@@ -1,44 +1,73 @@
 package de.thu.h5ptranslatorgui;
 
+import de.thu.h5ptranslate.H5PTranslator;
+import de.thu.h5ptranslate.H5PTranslatorFactory;
+
 import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
 
-/**
- * Die MTP-GUI
- * 
- * @author HG
- * @version 29.05.2022
- */
-public class H5PTranslatorGUIFrame extends JFrame
-{
+public class H5PTranslatorGUIFrame extends JFrame {
+
     H5PTranslatorGUIFrame() {
-        this(new H5PTranslatorGUIPanelText[0]);
-    }
-    
-    H5PTranslatorGUIFrame(H5PTranslatorGUIPanelText[] tf) {
-        // Create a new JFrame container.
-        super("MedTec+");         
+        super("MedTec+");
 
-       setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-       JTextField t =new JTextField("MTP rules");
-       add(t);
-       
-       for (int i = 0; i < tf.length; i++) {
-            add(tf[i]);
-            // Die Buttons müssen erzeugt, mit einem ActionListener versehen
-            // und eingefügt werden.
-           /* sp[i] = new Button();
-            sp[i].setLabel(Integer.toString(i+1));
-            sp[i].setBackground(Color.LIGHT_GRAY);
-            sp[i].addActionListener(al);
-            add(sp[i]); */
+        Properties props = System.getProperties();
+        String pythonPath = "";
+        try {
+            pythonPath = new File(System.getProperty("user.dir") + "/..").getCanonicalPath();
+        } catch (IOException i) {
         }
-        
-        // Terminate the program when the user closes the application.
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
 
-        // Display the frame.
-        pack();
+        props.setProperty("python.path", pythonPath);
+
+        // creating the H5PAccess class using the factory design pattern
+        H5PTranslatorFactory factory = new H5PTranslatorFactory();
+        H5PTranslator h5ptrans = factory.create();
+
+        System.out.println("Anfang vom Öffnen");
+
+
+
+
+
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.add(new JMenu("File"));
+        menuBar.add(new JMenu("Edit"));
+        menuBar.add(new JMenu("Navigate"));
+        menuBar.add(new JMenu("Tools"));
+        setJMenuBar(menuBar);
+
+        JPanel pLeft = new JPanel();
+        pLeft.setBackground(Color.GRAY);
+        pLeft.add(new H5PTranslatorGUINavigation(h5ptrans));
+
+        JPanel pRight = new JPanel();
+        pRight.setBackground(Color.GRAY);
+        pRight.add(new H5PTranslatorGUITranslate(h5ptrans));
+
+        JSplitPane pSplit = new JSplitPane();
+        pSplit.setDividerLocation(0.15);
+        pSplit.setDividerSize(1);
+        pSplit.add(pLeft, JSplitPane.LEFT);
+        pSplit.add(pRight, JSplitPane.RIGHT);
+        add(pSplit);
+
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                h5ptrans.close(false);
+                System.exit(0);
+            }
+        });
+
+        setResizable(false);
+        setSize(1980, 1024);
         setVisible(true);
+    }
+
+    void newSlide(int slideNr) {
+
     }
 }
