@@ -35,7 +35,6 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
         j.setBackground(b.getBackground());
         add(j); add(j);
 
-
         add(new Button("Save"));
         add(new Button("Reload"));
         add(new Button("Close"));
