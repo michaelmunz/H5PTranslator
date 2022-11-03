@@ -222,7 +222,7 @@ class H5PAccessImpl():
             #  write modified json data into file
             with open(self.content_path, 'w') as jsonFile:
                 json.dump(self.content, jsonFile)
-            if self.content_path.endswith(".json"):
+            if self.path.endswith(".json"):
                 shutil.copyfile(self.content_path, self.path)
             else:
                 self.zip_proxy.replace(self.path, 'content/content.json', self.content_path)
