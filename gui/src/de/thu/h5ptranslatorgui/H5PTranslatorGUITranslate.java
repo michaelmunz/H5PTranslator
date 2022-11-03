@@ -18,11 +18,10 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
     static int[] widthColumns = {250, 310, 310, 80, 100, 100};
     static int heightColumns = 50;
 
-    H5PTranslatorGUITranslate(H5PTranslator h5ptrans) {
+    H5PTranslatorGUITranslate(H5PTranslator h5ptrans, int slideNr) {
 
         this.h5ptrans = h5ptrans;
 
-        int slideNr = 1;
         int nrOfElements = h5ptrans.getElementsForSlide_original(slideNr).size();
         List<Element> origList = h5ptrans.getElementsForSlide_original(slideNr);
         List<Element> transList = h5ptrans.getElementsForSlide_translate(slideNr);

@@ -11,6 +11,9 @@ import java.util.Properties;
 
 public class H5PTranslatorGUIFrame extends JFrame {
 
+    H5PTranslatorGUINavigation h5PTranslatorGUINavigation;
+    H5PTranslator h5ptrans;
+
     H5PTranslatorGUIFrame() {
         super("MedTec+");
 
@@ -19,19 +22,17 @@ public class H5PTranslatorGUIFrame extends JFrame {
         try {
             pythonPath = new File(System.getProperty("user.dir") + "/..").getCanonicalPath();
         } catch (IOException i) {
+            System.out.println("IOException");
         }
 
         props.setProperty("python.path", pythonPath);
 
         // creating the H5PAccess class using the factory design pattern
         H5PTranslatorFactory factory = new H5PTranslatorFactory();
-        H5PTranslator h5ptrans = factory.create();
+        h5ptrans = factory.create();
+        h5ptrans.open("C:\\Users\\gross\\Documents\\GitHub\\H5PTranslator\\data\\content.json", "C:\\Users\\gross\\Documents\\GitHub\\H5PTranslator\\data\\content_DE.json");
 
-        System.out.println("Anfang vom Öffnen");
-
-
-
-
+        h5PTranslatorGUINavigation = new H5PTranslatorGUINavigation(this, h5ptrans);
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(new JMenu("File"));
@@ -40,20 +41,7 @@ public class H5PTranslatorGUIFrame extends JFrame {
         menuBar.add(new JMenu("Tools"));
         setJMenuBar(menuBar);
 
-        JPanel pLeft = new JPanel();
-        pLeft.setBackground(Color.GRAY);
-        pLeft.add(new H5PTranslatorGUINavigation(h5ptrans));
-
-        JPanel pRight = new JPanel();
-        pRight.setBackground(Color.GRAY);
-        pRight.add(new H5PTranslatorGUITranslate(h5ptrans));
-
-        JSplitPane pSplit = new JSplitPane();
-        pSplit.setDividerLocation(0.15);
-        pSplit.setDividerSize(1);
-        pSplit.add(pLeft, JSplitPane.LEFT);
-        pSplit.add(pRight, JSplitPane.RIGHT);
-        add(pSplit);
+        refresh();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent e) {
@@ -67,7 +55,24 @@ public class H5PTranslatorGUIFrame extends JFrame {
         setVisible(true);
     }
 
-    void newSlide(int slideNr) {
+   public void refresh() {
+       JPanel pLeft = new JPanel();
+       pLeft.setBackground(Color.GRAY);
+       pLeft.add(h5PTranslatorGUINavigation);
 
-    }
+       JPanel pRight = new JPanel();
+       pRight.setBackground(Color.GRAY);
+       pRight.add(new H5PTranslatorGUITranslate(h5ptrans, h5PTranslatorGUINavigation.getSlideNr()-1));
+
+       JSplitPane pSplit = new JSplitPane();
+       pSplit.setDividerLocation(0.15);
+       pSplit.setDividerSize(1);
+       pSplit.add(pLeft, JSplitPane.LEFT);
+       pSplit.add(pRight, JSplitPane.RIGHT);
+
+       getContentPane().removeAll();
+       add(pSplit);
+       validate();
+       repaint();
+   }
 }
