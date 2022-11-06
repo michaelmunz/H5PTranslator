@@ -29,7 +29,6 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
         int nrRows = nrOfElements+1;
         setLayout(new GridLayout2(nrRows, 6, 15, 10));
 
-        // setSize(1920, 1080);
         setBackground(Color.GRAY);
 
         tAddHeader();
@@ -64,9 +63,10 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
 
     private void tAdd(String[] s) {
         tAdd(s[0]);
-        tAdd(s[1]);
+        tAdd(JTextField2.removeTags(s[1]));
 
-        JTextField j = new JTextField(s[2]);
+        JTextField2 j = new JTextField2(s[2]);
+        j.setCaretPosition(0);
         j.addFocusListener(this);
         j.setEditable(false);
         tAdd(j);
@@ -85,6 +85,8 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
         tAdd("y-coordinate");
     }
 
+
+
     public void closedHTMLDE() {
         htmlDocumentEditorShown = false;
     }
@@ -92,7 +94,8 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
     @Override
     public void focusGained(FocusEvent e) {
         if (!htmlDocumentEditorShown) {
-            JTextField j = (JTextField) e.getComponent();
+            JTextField2 j = (JTextField2) e.getComponent();
+            j.setCaretPosition(0);
             j.setBackground(Color.PINK);
             htmlDE = new HTMLDocumentEditor(this, j);
             htmlDocumentEditorShown = true;
@@ -103,8 +106,9 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
 
     @Override
     public void focusLost(FocusEvent e) {
-        JTextField j = (JTextField) e.getComponent();
+        JTextField2 j = (JTextField2) e.getComponent();
         j.setBackground(null);
+        j.setCaretPosition(0);
     }
 }
 

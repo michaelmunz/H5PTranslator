@@ -10,8 +10,9 @@ import java.awt.event.ActionListener;
 public class H5PTranslatorGUINavigation extends JPanel implements ActionListener {
 
     int slideNr = 1;
-    H5PTranslatorGUIFrame h5PTranslatorGUIFrame;
+    Button slideNrButton;
 
+    H5PTranslatorGUIFrame h5PTranslatorGUIFrame;
      H5PTranslatorGUINavigation(H5PTranslatorGUIFrame h5PTranslatorGUIFrame, H5PTranslator h5ptrans)  {
 
         this.h5PTranslatorGUIFrame = h5PTranslatorGUIFrame;
@@ -24,6 +25,7 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
         b.setBackground(Color.PINK);
         b.addActionListener(this);
         add(b);
+        slideNrButton = b;
         for (int i = 2; i < h5ptrans.getNrOfSlides(); i++) {
             b = new Button("Slide " + i);
             b.addActionListener(this);
@@ -46,11 +48,12 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        for (Component component : this.getComponents())
-            component.setBackground(Color.LIGHT_GRAY);
+        slideNrButton.setBackground(Color.LIGHT_GRAY);
+
         Button b = (Button)(e.getSource());
         b.setBackground(Color.PINK);
         slideNr = Integer.parseInt(b.getLabel().substring(6));
+        slideNrButton = b;
         h5PTranslatorGUIFrame.refresh();
     }
 }

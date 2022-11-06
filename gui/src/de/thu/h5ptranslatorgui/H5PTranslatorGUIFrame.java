@@ -13,6 +13,8 @@ public class H5PTranslatorGUIFrame extends JFrame {
 
     H5PTranslatorGUINavigation h5PTranslatorGUINavigation;
     H5PTranslator h5ptrans;
+    JSplitPane pSplit;
+    JPanel pLeft , pRight;
 
     H5PTranslatorGUIFrame() {
         super("MedTec+");
@@ -41,7 +43,7 @@ public class H5PTranslatorGUIFrame extends JFrame {
         menuBar.add(new JMenu("Tools"));
         setJMenuBar(menuBar);
 
-        refresh();
+        paintNew();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent e) {
@@ -51,28 +53,43 @@ public class H5PTranslatorGUIFrame extends JFrame {
         });
 
         setResizable(false);
-        setSize(1980, 1024);
+        setSize(1900, 1000);
         setVisible(true);
     }
 
-   public void refresh() {
-       JPanel pLeft = new JPanel();
+   public void paintNew() {
+       pLeft = new JPanel();
        pLeft.setBackground(Color.GRAY);
        pLeft.add(h5PTranslatorGUINavigation);
 
-       JPanel pRight = new JPanel();
+       pRight = new JPanel();
        pRight.setBackground(Color.GRAY);
        pRight.add(new H5PTranslatorGUITranslate(h5ptrans, h5PTranslatorGUINavigation.getSlideNr()-1));
 
-       JSplitPane pSplit = new JSplitPane();
+       pSplit = new JSplitPane();
        pSplit.setDividerLocation(0.15);
        pSplit.setDividerSize(1);
+
        pSplit.add(pLeft, JSplitPane.LEFT);
        pSplit.add(pRight, JSplitPane.RIGHT);
 
-       getContentPane().removeAll();
        add(pSplit);
        validate();
        repaint();
    }
+
+    public void refresh() {
+
+        pSplit.remove(pRight);
+
+        pRight = new JPanel();
+        pRight.setBackground(Color.GRAY);
+        pRight.add(new H5PTranslatorGUITranslate(h5ptrans, h5PTranslatorGUINavigation.getSlideNr()-1));
+
+        pSplit.add(pRight, JSplitPane.RIGHT);
+
+        add(pSplit);
+        validate();
+        repaint();
+    }
 }
