@@ -25,6 +25,10 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
         int nrOfElements = h5ptrans.getElementsForSlide_original(slideNr).size();
         List<Element> origList = h5ptrans.getElementsForSlide_original(slideNr);
         List<Element> transList = h5ptrans.getElementsForSlide_translate(slideNr);
+        List<String>  untranslatedList = h5ptrans.getUntranslatedElementIDs();
+
+        for (int i=0; i < untranslatedList.size(); i++)
+            System.out.println(i);
 
         int nrRows = nrOfElements+1;
         setLayout(new GridLayout2(nrRows, 5, 15, 10));
@@ -34,11 +38,17 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
         tAddHeader();
         for (int i = 0; i < nrOfElements; i++) {
             Element aktElement = origList.get(i);
-            tAdd(new String[]{aktElement.getID(),
-                    aktElement.getText(),
-                    transList.get(i).getText(),
-                    "2",
-                    "3"});
+
+            String sx = "", sy = "";
+            Float f = transList.get(i).getX();
+            if (f != null)
+                sx = f.toString();
+            f = transList.get(i).getY();
+            if (f != null)
+                sy = f.toString();
+
+            boolean b = untranslatedList.contains(aktElement.getID());
+            tAdd(new String[]{aktElement.getID(), aktElement.getText(), transList.get(i).getText(), sx, sy}, b);
         }
     }
 
@@ -61,7 +71,7 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
         increaseCounter();
     }
 
-    private void tAdd(String[] s) {
+    private void tAdd(String[] s, boolean b) {
         tAdd(s[0]);
         tAdd(JTextField2.removeTags(s[1]));
 
@@ -69,6 +79,8 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
         j.setCaretPosition(0);
         j.addFocusListener(this);
         j.setEditable(false);
+        if (b)
+            j.setBackground(Color.red);
         tAdd(j);
 
         tAdd(s[3]);
