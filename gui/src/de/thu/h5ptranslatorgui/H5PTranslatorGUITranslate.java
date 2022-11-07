@@ -15,7 +15,7 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
     boolean htmlDocumentEditorShown = false;
     H5PTranslator h5ptrans;
 
-    static int[] widthColumns = {250, 310, 310, 80, 100, 100};
+    static int[] widthColumns = {250, 310, 310, 100, 100};
     static int heightColumns = 50;
 
     H5PTranslatorGUITranslate(H5PTranslator h5ptrans, int slideNr) {
@@ -27,7 +27,7 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
         List<Element> transList = h5ptrans.getElementsForSlide_translate(slideNr);
 
         int nrRows = nrOfElements+1;
-        setLayout(new GridLayout2(nrRows, 6, 15, 10));
+        setLayout(new GridLayout2(nrRows, 5, 15, 10));
 
         setBackground(Color.GRAY);
 
@@ -44,7 +44,7 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
 
     private void increaseCounter() {
         counterComponents++;
-        if (counterComponents == 6)
+        if (counterComponents == 5)
             counterComponents = 0;
     }
 
@@ -71,7 +71,6 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
         j.setEditable(false);
         tAdd(j);
 
-        tAdd(new Button("Auto"));
         tAdd(s[3]);
         tAdd(s[4]);
     }
@@ -80,12 +79,9 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
         tAdd("id");
         tAdd("English");
         tAdd("German");
-        tAdd("Google Translator");
         tAdd("x-coordinate");
         tAdd("y-coordinate");
     }
-
-
 
     public void closedHTMLDE() {
         htmlDocumentEditorShown = false;
