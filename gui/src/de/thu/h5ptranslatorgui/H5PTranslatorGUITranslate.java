@@ -47,8 +47,8 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
             if (f != null)
                 sy = f.toString();
 
-            boolean b = untranslatedList.contains(aktElement.getID());
-            tAdd(new String[]{aktElement.getID(), aktElement.getText(), transList.get(i).getText(), sx, sy}, b);
+            boolean untranslated = untranslatedList.contains(aktElement.getID());
+            tAdd(new String[]{aktElement.getID(), aktElement.getText(), transList.get(i).getText(), sx, sy}, untranslated);
         }
     }
 
@@ -71,7 +71,7 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
         increaseCounter();
     }
 
-    private void tAdd(String[] s, boolean b) {
+    private void tAdd(String[] s, boolean untranslated) {
         tAdd(s[0]);
         tAdd(JTextField2.removeTags(s[1]));
 
@@ -79,7 +79,7 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
         j.setCaretPosition(0);
         j.addFocusListener(this);
         j.setEditable(false);
-        if (b)
+        if (untranslated)
             j.setBackground(Color.red);
         tAdd(j);
 
