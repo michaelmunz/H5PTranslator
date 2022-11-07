@@ -65,7 +65,7 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
         tAdd(s[0]);
         tAdd(JTextField2.removeTags(s[1]));
 
-        JTextField2 j = new JTextField2(s[2]);
+        JTextField2 j = new JTextField2(s[1], s[2]);
         j.setCaretPosition(0);
         j.addFocusListener(this);
         j.setEditable(false);

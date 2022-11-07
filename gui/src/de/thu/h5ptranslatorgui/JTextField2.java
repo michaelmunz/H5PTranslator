@@ -5,6 +5,7 @@ import javax.swing.*;
 
 public class JTextField2 extends JTextField {
         String htmlText;
+        String origHtmlText;
 
         public String getHtmlText() {
             return htmlText;
@@ -15,9 +16,9 @@ public class JTextField2 extends JTextField {
         setText(removeTags(htmlText));
     }
 
-    public JTextField2(String s) {
-            setText(removeTags(s));
-            setHtmlText(s);
+    public JTextField2(String origHtmlText, String htmlText) {
+            setHtmlText(htmlText);
+            this.origHtmlText = origHtmlText;
     }
 
     public static String removeTags(String in) {

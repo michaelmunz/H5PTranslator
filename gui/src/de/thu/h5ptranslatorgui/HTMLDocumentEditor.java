@@ -6,6 +6,9 @@ package de.thu.h5ptranslatorgui;
  *	@version: May 27, 2002
  */
 
+import de.thu.h5ptranslate.H5PTranslator;
+import de.thu.h5ptranslate.H5PTranslatorFactory;
+
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -91,6 +94,7 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
         JMenu saveMenu = new JMenu("Save");
         JMenu fileMenu = new JMenu("File");
         JMenu editMenu = new JMenu("Edit");
+        JMenu autoMenu = new JMenu("Auto Translate");
         JMenu colorMenu = new JMenu("Color");
         JMenu fontMenu = new JMenu("Font");
         JMenu styleMenu = new JMenu("Style");
@@ -100,6 +104,7 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
         menuBar.add(saveMenu);
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
+        menuBar.add(autoMenu);
         menuBar.add(colorMenu);
         menuBar.add(fontMenu);
         menuBar.add(styleMenu);
@@ -266,8 +271,11 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
         shortcutsItem.addActionListener(this);
         helpMenu.add(shortcutsItem);
 
+        JMenuItem googleAutoItem = new JMenuItem("Auto Translate");
+        googleAutoItem.addActionListener(this);
+        autoMenu.add(googleAutoItem);
+
         JPanel editorControlPanel = new JPanel();
-        //editorControlPanel.setLayout(new GridLayout(3,3));
         editorControlPanel.setLayout(new FlowLayout());
 
         /* JButtons */
@@ -376,6 +384,7 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
             System.out.println("when: " + when);
             System.out.println("parameter: " + parameter);
         }
+
         if (actionCommand.compareTo("New") == 0) {
             startNewDocument();
         } else if (actionCommand.compareTo("Open") == 0) {
@@ -394,8 +403,17 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
             help();
         } else if (actionCommand.compareTo("Keyboard Shortcuts") == 0) {
             showShortcuts();
+        } else if (actionCommand.compareTo("Auto Translate") == 0) {
+            autoTranslate();
         }
     }
+
+    protected void autoTranslate() {
+        H5PTranslatorFactory factory = new H5PTranslatorFactory();
+        H5PTranslator h5ptrans = factory.create();
+        String s = h5ptrans.getAutoTranslation("en",  "de",  jtf.origHtmlText);
+        textPane.setText(s);
+    };
 
     protected void resetUndoManager() {
         undo.discardAllEdits();
