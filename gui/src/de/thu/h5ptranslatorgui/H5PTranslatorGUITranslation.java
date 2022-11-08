@@ -9,18 +9,21 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.List;
 
-public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
+public class H5PTranslatorGUITranslation extends JPanel implements FocusListener {
 
     HTMLDocumentEditor htmlDE;
     boolean htmlDocumentEditorShown = false;
     H5PTranslator h5ptrans;
-
     static int[] widthColumns = {250, 310, 310, 100, 100};
     static int heightColumns = 50;
 
-    H5PTranslatorGUITranslate(H5PTranslator h5ptrans, int slideNr) {
+    H5PTranslatorGUIFrame GUIFrame;
 
-        this.h5ptrans = h5ptrans;
+    H5PTranslatorGUITranslation(H5PTranslatorGUIFrame GUIFrame) {
+
+        this.GUIFrame = GUIFrame;
+        h5ptrans = GUIFrame.getH5ptrans();
+        int slideNr = GUIFrame.getGUINavigation().getSlideNr()-1;
 
         int nrOfElements = h5ptrans.getElementsForSlide_original(slideNr).size();
         List<Element> origList = h5ptrans.getElementsForSlide_original(slideNr);
@@ -89,6 +92,7 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
 
     private void tAddHeader() {
         tAdd("id");
+       // ToDo case
         tAdd("English");
         tAdd("German");
         tAdd("x-coordinate");

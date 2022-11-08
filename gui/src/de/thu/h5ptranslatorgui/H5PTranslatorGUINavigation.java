@@ -1,7 +1,5 @@
 package de.thu.h5ptranslatorgui;
 
-import de.thu.h5ptranslate.H5PTranslator;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,22 +9,37 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
 
     int slideNr = 1;
     Button slideNrButton;
+    static String[] languages = {"en", "de", "hu"};
 
-    H5PTranslatorGUIFrame h5PTranslatorGUIFrame;
-     H5PTranslatorGUINavigation(H5PTranslatorGUIFrame h5PTranslatorGUIFrame, H5PTranslator h5ptrans)  {
+    JComboBox<String> languageIn, languageOut ;
+    String languageInString = "en", languageOutString = "en";
 
-        this.h5PTranslatorGUIFrame = h5PTranslatorGUIFrame;
+
+    H5PTranslatorGUIFrame GUIFrame;
+     H5PTranslatorGUINavigation(H5PTranslatorGUIFrame GUIFrame)  {
+
+        this.GUIFrame = GUIFrame;
         setBackground(Color.GRAY);
         GridLayout l = new GridLayout(20,1);
         l.setVgap(10);
         setLayout(l);
+
+         languageIn = new JComboBox<>(languages);
+         add(new Label("Orig. Language"));
+         languageIn.addActionListener(this);
+         add(languageIn);
+
+         languageOut = new JComboBox<>(languages) ;
+         add(new Label("Trans. Language"));
+         languageOut.addActionListener(this);
+         add(languageOut);
 
         Button b = new Button("Slide 1");
         b.setBackground(Color.PINK);
         b.addActionListener(this);
         add(b);
         slideNrButton = b;
-        for (int i = 2; i < h5ptrans.getNrOfSlides(); i++) {
+        for (int i = 2; i < GUIFrame.getH5ptrans().getNrOfSlides(); i++) {
             b = new Button("Slide " + i);
             b.addActionListener(this);
             b.setBackground(Color.LIGHT_GRAY);
@@ -37,6 +50,7 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
         j.setBackground(b.getBackground());
         add(j); add(j);
 
+
         add(new Button("Save"));
         add(new Button("Reload"));
         add(new Button("Close"));
@@ -46,14 +60,34 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
          return slideNr;
     }
 
+    public String getLanguageIn()  {
+        return languageInString;
+    }
+
+    public String getLanguageOut()  {
+        return languageOutString;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
+
+        if (e.getSource() == languageIn) {
+            languageInString = languageIn.getSelectedItem().toString();
+            return;
+        }
+
+        if (e.getSource() == languageOut) {
+            languageOutString = languageOut.getSelectedItem().toString();
+            return;
+        }
+
         slideNrButton.setBackground(Color.LIGHT_GRAY);
 
         Button b = (Button)(e.getSource());
         b.setBackground(Color.PINK);
         slideNr = Integer.parseInt(b.getLabel().substring(6));
         slideNrButton = b;
-        h5PTranslatorGUIFrame.refresh();
+        GUIFrame.refresh();
     }
 }
+

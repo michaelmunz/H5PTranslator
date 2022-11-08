@@ -11,7 +11,9 @@ import java.util.Properties;
 
 public class H5PTranslatorGUIFrame extends JFrame {
 
-    H5PTranslatorGUINavigation h5PTranslatorGUINavigation;
+    H5PTranslatorGUINavigation GUINavigation;
+    H5PTranslatorGUITranslation GUITranslation;
+
     H5PTranslator h5ptrans;
     JSplitPane pSplit;
     JPanel pLeft , pRight;
@@ -34,7 +36,7 @@ public class H5PTranslatorGUIFrame extends JFrame {
         h5ptrans = factory.create();
         h5ptrans.open("C:\\Users\\gross\\Documents\\GitHub\\H5PTranslator\\data\\content.json", "C:\\Users\\gross\\Documents\\GitHub\\H5PTranslator\\data\\content_DE.json");
 
-        h5PTranslatorGUINavigation = new H5PTranslatorGUINavigation(this, h5ptrans);
+        GUINavigation = new H5PTranslatorGUINavigation(this);
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(new JMenu("File"));
@@ -60,11 +62,12 @@ public class H5PTranslatorGUIFrame extends JFrame {
    public void paintNew() {
        pLeft = new JPanel();
        pLeft.setBackground(Color.GRAY);
-       pLeft.add(h5PTranslatorGUINavigation);
+       pLeft.add(GUINavigation);
 
+       GUITranslation = new H5PTranslatorGUITranslation(this);
        pRight = new JPanel();
        pRight.setBackground(Color.GRAY);
-       pRight.add(new H5PTranslatorGUITranslate(h5ptrans, h5PTranslatorGUINavigation.getSlideNr()-1));
+       pRight.add(GUITranslation);
 
        pSplit = new JSplitPane();
        pSplit.setDividerLocation(0.15);
@@ -82,14 +85,27 @@ public class H5PTranslatorGUIFrame extends JFrame {
 
         pSplit.remove(pRight);
 
+        GUITranslation = new H5PTranslatorGUITranslation(this);
         pRight = new JPanel();
         pRight.setBackground(Color.GRAY);
-        pRight.add(new H5PTranslatorGUITranslate(h5ptrans, h5PTranslatorGUINavigation.getSlideNr()-1));
+        pRight.add(GUITranslation);
 
         pSplit.add(pRight, JSplitPane.RIGHT);
 
         add(pSplit);
         validate();
         repaint();
+    }
+
+    public H5PTranslator getH5ptrans() {
+        return  h5ptrans;
+    }
+
+    public H5PTranslatorGUINavigation getGUINavigation() {
+        return GUINavigation;
+    }
+
+    public H5PTranslatorGUITranslation getGUITranslation() {
+        return GUITranslation;
     }
 }
