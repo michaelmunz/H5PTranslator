@@ -34,6 +34,8 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
          languageOut.addActionListener(this);
          add(languageOut);
 
+         emptyLine(2);
+
         Button b = new Button("Slide 1");
         b.setBackground(Color.PINK);
         b.addActionListener(this);
@@ -46,14 +48,16 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
             add(b);
         }
 
-        JLabel j = new JLabel("");
-        j.setBackground(b.getBackground());
-        add(j); add(j);
-
+        emptyLine(2);
 
         add(new Button("Save"));
         add(new Button("Reload"));
         add(new Button("Close"));
+    }
+
+    public void emptyLine(int anzahl) {
+         for (int i = 0; i < 2*anzahl; i++)
+             add(new Label());
     }
 
     public int getSlideNr()  {

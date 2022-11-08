@@ -33,7 +33,8 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
     private JTextPane textPane = new JTextPane();
     private final boolean debug = false;
     private File currentFile;
-    private final H5PTranslatorGUITranslation guiTrans;
+
+    private H5PTranslatorGUIFrame GUIFrame;
     private final JTextField2 jtf;
 
 
@@ -65,11 +66,11 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
             = new HTMLEditorKit.InsertHTMLTextAction("Bullets", "<li> </li>", HTML.Tag.UL, HTML.Tag.LI);
 
 
-    public HTMLDocumentEditor(H5PTranslatorGUITranslation guiTrans, JTextField2 jtf) {
+    public HTMLDocumentEditor(H5PTranslatorGUIFrame GUIFrame, JTextField2 jtf) {
         super("HTMLDocumentEditor");
 
         this.jtf = jtf;
-        this.guiTrans = guiTrans;
+        this.GUIFrame = GUIFrame;
 
         HTMLEditorKit editorKit = new HTMLEditorKit();
         document = (HTMLDocument) editorKit.createDefaultDocument();
@@ -409,9 +410,8 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
     }
 
     protected void autoTranslate() {
-        H5PTranslatorFactory factory = new H5PTranslatorFactory();
-        H5PTranslator h5ptrans = factory.create();
-        String s = h5ptrans.getAutoTranslation("en",  "de",  jtf.origHtmlText);
+        String languageIn = GUIFrame.getGUINavigation().getLanguageIn(), languageOut = GUIFrame.getGUINavigation().getLanguageOut();
+        String s = GUIFrame.getH5ptrans().getAutoTranslation(languageIn,  languageOut,  jtf.origHtmlText);
         textPane.setText(s);
     }
 
@@ -536,7 +536,7 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
             } catch (Exception e) {
                 System.err.print(e);
             }
-            guiTrans.closedHTMLDE();
+            GUIFrame.getGUITranslation().closedHTMLDE();
             dispose();
         }
     }

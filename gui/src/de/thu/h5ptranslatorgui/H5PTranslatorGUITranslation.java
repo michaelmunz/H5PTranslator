@@ -93,8 +93,8 @@ public class H5PTranslatorGUITranslation extends JPanel implements FocusListener
     private void tAddHeader() {
         tAdd("id");
        // ToDo case
-        tAdd("English");
-        tAdd("German");
+        tAdd("Original");
+        tAdd("Translated");
         tAdd("x-coordinate");
         tAdd("y-coordinate");
     }
@@ -109,7 +109,7 @@ public class H5PTranslatorGUITranslation extends JPanel implements FocusListener
             JTextField2 j = (JTextField2) e.getComponent();
             j.setCaretPosition(0);
             j.setBackground(Color.PINK);
-            htmlDE = new HTMLDocumentEditor(this, j);
+            htmlDE = new HTMLDocumentEditor(GUIFrame, j);
             htmlDocumentEditorShown = true;
         }
         this.requestFocus();
