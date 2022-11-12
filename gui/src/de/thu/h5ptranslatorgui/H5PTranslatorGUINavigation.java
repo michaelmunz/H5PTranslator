@@ -143,10 +143,11 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
                     GUIFrame.paintNew();
                 }
                 break;
-            case "Close":
+            case "Close App":
                 dialogResult = JOptionPane.showConfirmDialog(null, "Would You like to close the application (DID YOU SAVE YOUR CHANGES ALREADY?)", "Closing", dialogButton);
                 if (dialogResult == JOptionPane.YES_OPTION) {
-                    GUIFrame.getH5ptrans().close(false);
+                    if (GUIFrame.isFileOpen())
+                        GUIFrame.getH5ptrans().close(false);
                     System.exit(0);
                 }
                 break;

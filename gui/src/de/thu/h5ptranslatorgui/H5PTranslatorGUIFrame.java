@@ -57,14 +57,13 @@ public class H5PTranslatorGUIFrame extends JFrame {
         // creating the H5PAccess class using the factory design pattern
         H5PTranslatorFactory factory = new H5PTranslatorFactory();
         h5ptrans = factory.create();
-        // h5ptrans.open("C:\\Users\\gross\\Documents\\GitHub\\H5PTranslator\\data\\course-presentation-36_EN.json", "C:\\Users\\gross\\Documents\\GitHub\\H5PTranslator\\data\\course-presentation-36_DE.json");
-        // h5ptrans.close(true);
 
         paintNew();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent e) {
-                h5ptrans.close(false);
+                if (isFileOpen())
+                   h5ptrans.close(false);
                 System.exit(0);
             }
         });
@@ -96,7 +95,10 @@ public class H5PTranslatorGUIFrame extends JFrame {
             pRight.add(GUITranslation);
 
         } else {
-            pRight.add(new JLabel("Please check the language you want to translate to and then load a file of the form xyz_EN.json"));
+            JLabel j = new JLabel("Please check the language you want to translate to and then load a file of the form xyz_EN.json etc.");
+            j.setForeground(Color.red);
+            j.setFont(new Font("TimesRoman", Font.PLAIN, 30));
+            pRight.add(j);
         }
         pSplit.add(pRight, JSplitPane.RIGHT);
 
