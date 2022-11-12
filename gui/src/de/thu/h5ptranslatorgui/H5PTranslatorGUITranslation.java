@@ -13,7 +13,7 @@ public class H5PTranslatorGUITranslation extends JPanel implements FocusListener
 
     HTMLDocumentEditor htmlDE;
     boolean htmlDocumentEditorShown = false;
-    H5PTranslator h5ptrans;
+
     static int[] widthColumns = {250, 310, 310, 100, 100};
     static int heightColumns = 50;
 
@@ -22,18 +22,17 @@ public class H5PTranslatorGUITranslation extends JPanel implements FocusListener
     H5PTranslatorGUITranslation(H5PTranslatorGUIFrame GUIFrame) {
 
         this.GUIFrame = GUIFrame;
-        h5ptrans = GUIFrame.getH5ptrans();
-        int slideNr = GUIFrame.getGUINavigation().getSlideNr()-1;
+        H5PTranslator h5ptrans = GUIFrame.getH5ptrans();
+        int slideNr = GUIFrame.getSlideNr() - 1;
 
         int nrOfElements = h5ptrans.getElementsForSlide_original(slideNr).size();
         List<Element> origList = h5ptrans.getElementsForSlide_original(slideNr);
         List<Element> transList = h5ptrans.getElementsForSlide_translate(slideNr);
-        List<String>  untranslatedList = h5ptrans.getUntranslatedElementIDs();
+        List<String> untranslatedList = h5ptrans.getUntranslatedElementIDs();
 
-        for (int i=0; i < untranslatedList.size(); i++)
-            System.out.println(i);
+        // for (int i=0; i < untranslatedList.size(); i++)  System.out.println(i);
 
-        int nrRows = nrOfElements+1;
+        int nrRows = nrOfElements + 1;
         setLayout(new GridLayout2(nrRows, 5, 15, 10));
 
         setBackground(Color.GRAY);
@@ -78,12 +77,11 @@ public class H5PTranslatorGUITranslation extends JPanel implements FocusListener
         tAdd(s[0]);
         tAdd(JTextField2.removeTags(s[1]));
 
-        JTextField2 j = new JTextField2(s[1], s[2]);
+        JTextField2 j = new JTextField2(s[0], s[1], s[2]);
         j.setCaretPosition(0);
         j.addFocusListener(this);
         j.setEditable(false);
-        if (untranslated)
-            j.setBackground(Color.red);
+        // if (untranslated)  j.setBackground(Color.red);
         tAdd(j);
 
         tAdd(s[3]);
@@ -92,7 +90,6 @@ public class H5PTranslatorGUITranslation extends JPanel implements FocusListener
 
     private void tAddHeader() {
         tAdd("id");
-       // ToDo case
         tAdd("Original");
         tAdd("Translated");
         tAdd("x-coordinate");

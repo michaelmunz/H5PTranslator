@@ -410,7 +410,7 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
     }
 
     protected void autoTranslate() {
-        String languageIn = GUIFrame.getGUINavigation().getLanguageIn(), languageOut = GUIFrame.getGUINavigation().getLanguageOut();
+        String languageIn = GUIFrame.getLanguageIn(), languageOut = GUIFrame.getLanguageOut();
         String s = GUIFrame.getH5ptrans().getAutoTranslation(languageIn,  languageOut,  jtf.origHtmlText);
         textPane.setText(s);
     }
@@ -533,6 +533,7 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
                 jtf.setHtmlText(str);
                 jtf.setBackground(Color.WHITE);
                 jtf.setCaretPosition(0);
+                GUIFrame.getH5ptrans().setTranslation(jtf.getID(),str);
             } catch (Exception e) {
                 System.err.print(e);
             }

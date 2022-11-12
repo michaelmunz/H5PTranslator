@@ -6,8 +6,10 @@ import de.thu.h5ptranslate.H5PTranslatorFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Scanner;
 
 public class H5PTranslatorGUIFrame extends JFrame {
 
@@ -15,8 +17,19 @@ public class H5PTranslatorGUIFrame extends JFrame {
     H5PTranslatorGUITranslation GUITranslation;
 
     H5PTranslator h5ptrans;
+
+    boolean fileOpen = false;
+
     JSplitPane pSplit;
-    JPanel pLeft , pRight;
+    JPanel pLeft, pRight;
+    File currentDirectory;
+    String inFile = "", outFile = "";
+
+    String[] languages = {"EN", "DE", "HU"};
+
+    int selectedInLanguage = 0, selectedOutLanguage = 1;
+
+    int slideNr = 1;
 
     H5PTranslatorGUIFrame() {
         super("MedTec+");
@@ -31,19 +44,21 @@ public class H5PTranslatorGUIFrame extends JFrame {
 
         props.setProperty("python.path", pythonPath);
 
+        try {
+            File myObj = new File("startDirectory.txt");
+            Scanner myReader = new Scanner(myObj);
+            currentDirectory = new File(myReader.nextLine());
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("FileNotFoundException");
+            e.printStackTrace();
+        }
+
         // creating the H5PAccess class using the factory design pattern
         H5PTranslatorFactory factory = new H5PTranslatorFactory();
         h5ptrans = factory.create();
-        h5ptrans.open("C:\\Users\\gross\\Documents\\GitHub\\H5PTranslator\\data\\content.json", "C:\\Users\\gross\\Documents\\GitHub\\H5PTranslator\\data\\content_DE.json");
-
-        GUINavigation = new H5PTranslatorGUINavigation(this);
-
-        JMenuBar menuBar = new JMenuBar();
-        menuBar.add(new JMenu("File"));
-        menuBar.add(new JMenu("Edit"));
-        menuBar.add(new JMenu("Navigate"));
-        menuBar.add(new JMenu("Tools"));
-        setJMenuBar(menuBar);
+        // h5ptrans.open("C:\\Users\\gross\\Documents\\GitHub\\H5PTranslator\\data\\course-presentation-36_EN.json", "C:\\Users\\gross\\Documents\\GitHub\\H5PTranslator\\data\\course-presentation-36_DE.json");
+        // h5ptrans.close(true);
 
         paintNew();
 
@@ -59,29 +74,39 @@ public class H5PTranslatorGUIFrame extends JFrame {
         setVisible(true);
     }
 
-   public void paintNew() {
-       pLeft = new JPanel();
-       pLeft.setBackground(Color.GRAY);
-       pLeft.add(GUINavigation);
+    public void paintNew() {
 
-       GUITranslation = new H5PTranslatorGUITranslation(this);
-       pRight = new JPanel();
-       pRight.setBackground(Color.GRAY);
-       pRight.add(GUITranslation);
+        getContentPane().removeAll();
 
-       pSplit = new JSplitPane();
-       pSplit.setDividerLocation(0.15);
-       pSplit.setDividerSize(1);
 
-       pSplit.add(pLeft, JSplitPane.LEFT);
-       pSplit.add(pRight, JSplitPane.RIGHT);
+        pSplit = new JSplitPane();
+        pSplit.setDividerLocation(0.15);
+        pSplit.setDividerSize(1);
 
-       add(pSplit);
-       validate();
-       repaint();
-   }
+        GUINavigation = new H5PTranslatorGUINavigation(this);
+        pLeft = new JPanel();
+        pLeft.setBackground(Color.GRAY);
+        pLeft.add(GUINavigation);
+        pSplit.add(pLeft, JSplitPane.LEFT);
 
-    public void refresh() {
+        pRight = new JPanel();
+        pRight.setBackground(Color.GRAY);
+        if (isFileOpen()) {
+            GUITranslation = new H5PTranslatorGUITranslation(this);
+            pRight.add(GUITranslation);
+
+        } else {
+            pRight.add(new JLabel("Please check the language you want to translate to and then load a file of the form xyz_EN.json"));
+        }
+        pSplit.add(pRight, JSplitPane.RIGHT);
+
+
+        add(pSplit);
+        validate();
+        repaint();
+    }
+
+    public void refresh3() {
 
         pSplit.remove(pRight);
 
@@ -98,7 +123,7 @@ public class H5PTranslatorGUIFrame extends JFrame {
     }
 
     public H5PTranslator getH5ptrans() {
-        return  h5ptrans;
+        return h5ptrans;
     }
 
     public H5PTranslatorGUINavigation getGUINavigation() {
@@ -108,4 +133,74 @@ public class H5PTranslatorGUIFrame extends JFrame {
     public H5PTranslatorGUITranslation getGUITranslation() {
         return GUITranslation;
     }
+
+    public File getCurrentDirectory() {
+        return currentDirectory;
+    }
+
+    public void setCurrentDirectory(File currentDirectory) {
+        this.currentDirectory = currentDirectory;
+    }
+
+    public String getInFile() {
+        return inFile;
+    }
+
+    public String getOutFile() {
+        return outFile;
+    }
+
+    public void setInFile(String inFile) {
+        this.inFile = inFile;
+    }
+
+    public void setOutFile(String outFile) {
+        this.outFile = outFile;
+    }
+
+
+    public boolean isFileOpen() {
+        return fileOpen;
+    }
+
+    public void setFileOpen(boolean fileOpen) {
+        this.fileOpen = fileOpen;
+    }
+
+    public int getSlideNr() {
+        return slideNr;
+    }
+
+    public void setSlideNr(int slideNr) {
+        this.slideNr = slideNr;
+    }
+
+    public int getSelectedInLanguage() {
+        return selectedInLanguage;
+    }
+
+    public void setSelectedInLanguage(int selectedInLanguage) {
+        this.selectedInLanguage = selectedInLanguage;
+    }
+
+    public int getSelectedOutLanguage() {
+        return selectedOutLanguage;
+    }
+
+    public void setSelectedOutLanguage(int selectedOutLanguage) {
+        this.selectedOutLanguage = selectedOutLanguage;
+    }
+
+    public String[] getLanguages() {
+        return languages;
+    }
+
+    public String getLanguageIn() {
+        return languages[selectedInLanguage];
+    }
+
+    public String getLanguageOut() {
+        return languages[selectedOutLanguage];
+    }
+
 }
