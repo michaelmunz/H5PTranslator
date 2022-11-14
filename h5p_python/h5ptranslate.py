@@ -229,7 +229,8 @@ class H5PAccessImpl():
 
 
         # comment only for testing purposes
-        self.tempdir.close()
+        if self.tempdir is not None:
+            self.tempdir.close()
 
 
     def replaceImage(self, file):
