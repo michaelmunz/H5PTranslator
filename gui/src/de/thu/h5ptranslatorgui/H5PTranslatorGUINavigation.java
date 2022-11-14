@@ -192,8 +192,10 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
             File selectedFile = fileChooser.getSelectedFile();
             GUIFrame.setCurrentDirectory(fileChooser.getCurrentDirectory());
             inFile = selectedFile.getAbsolutePath();
-            int i = inFile.indexOf('_');
-            outFile = inFile.substring(0, i + 1) + GUIFrame.getLanguageOut() + ".json";
+            int i = inFile.lastIndexOf('.');
+            String extension = inFile.substring(i);
+            outFile = inFile.substring(0, i) + "_" + GUIFrame.getLanguageOut()+extension;
+
             h5ptrans.open(inFile, outFile);
             GUIFrame.setInFile(inFile);
             GUIFrame.setOutFile(outFile);
