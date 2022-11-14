@@ -273,6 +273,8 @@ class H5PTranslatorImpl(H5PTranslator):
         trans_el = self.access_translate.getAllElements()
 
         for e in trans_el.values():
+            if e.getText()=="":
+                continue
             if isTranslated == True and e.getHash() is not None:
                 ids.append(e.getID())
             elif isTranslated == False and e.getHash() is None:
