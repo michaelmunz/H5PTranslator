@@ -30,8 +30,6 @@ public class H5PTranslatorGUITranslation extends JPanel implements FocusListener
         List<Element> transList = h5ptrans.getElementsForSlide_translate(slideNr);
         List<String> untranslatedList = h5ptrans.getUntranslatedElementIDs();
 
-        // for (int i=0; i < untranslatedList.size(); i++)  System.out.println(i);
-
         int nrRows = nrOfElements + 1;
         setLayout(new GridLayout2(nrRows, 5, 15, 10));
 
@@ -98,6 +96,7 @@ public class H5PTranslatorGUITranslation extends JPanel implements FocusListener
 
     public void closedHTMLDE() {
         htmlDocumentEditorShown = false;
+        htmlDE = null;
     }
 
     @Override

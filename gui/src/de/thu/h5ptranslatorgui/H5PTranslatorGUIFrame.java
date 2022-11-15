@@ -59,7 +59,7 @@ public class H5PTranslatorGUIFrame extends JFrame {
         h5ptrans = factory.create();
 
 
-        paintNew();
+        paintNew(true);
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent e) {
@@ -72,20 +72,20 @@ public class H5PTranslatorGUIFrame extends JFrame {
         setVisible(true);
     }
 
-    public void paintNew() {
+    public void paintNew(boolean allNew) {
 
-        getContentPane().removeAll();
+        if (allNew) {
 
+            pSplit = new JSplitPane();
+            pSplit.setDividerLocation(0.15);
+            pSplit.setDividerSize(1);
 
-        pSplit = new JSplitPane();
-        pSplit.setDividerLocation(0.15);
-        pSplit.setDividerSize(1);
-
-        GUINavigation = new H5PTranslatorGUINavigation(this);
-        pLeft = new JPanel();
-        pLeft.setBackground(Color.GRAY);
-        pLeft.add(GUINavigation);
-        pSplit.add(pLeft, JSplitPane.LEFT);
+            GUINavigation = new H5PTranslatorGUINavigation(this);
+            pLeft = new JPanel();
+            pLeft.setBackground(Color.GRAY);
+            pLeft.add(GUINavigation);
+            pSplit.add(pLeft, JSplitPane.LEFT);
+        }
 
         pRight = new JPanel();
         pRight.setBackground(Color.GRAY);
@@ -94,7 +94,7 @@ public class H5PTranslatorGUIFrame extends JFrame {
             pRight.add(GUITranslation);
 
         } else {
-            JLabel j = new JLabel("Please check the language you want to translate to and then load a file of the form xyz_EN.json etc.");
+            JLabel j = new JLabel("Please check the language you want to translate to and then load a file");
             j.setForeground(Color.red);
             j.setFont(new Font("TimesRoman", Font.PLAIN, 30));
             pRight.add(j);
@@ -102,22 +102,7 @@ public class H5PTranslatorGUIFrame extends JFrame {
         pSplit.add(pRight, JSplitPane.RIGHT);
 
 
-        add(pSplit);
-        validate();
-        repaint();
-    }
-
-    public void refresh3() {
-
-        pSplit.remove(pRight);
-
-        GUITranslation = new H5PTranslatorGUITranslation(this);
-        pRight = new JPanel();
-        pRight.setBackground(Color.GRAY);
-        pRight.add(GUITranslation);
-
-        pSplit.add(pRight, JSplitPane.RIGHT);
-
+        getContentPane().removeAll();
         add(pSplit);
         validate();
         repaint();
