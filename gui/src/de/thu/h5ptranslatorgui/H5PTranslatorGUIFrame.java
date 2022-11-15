@@ -20,12 +20,14 @@ public class H5PTranslatorGUIFrame extends JFrame {
             pythonPath = new File(System.getProperty("user.dir") + "/..").getCanonicalPath();
         } catch (IOException i) {
         }
-
+        System.out.println("Setting python.path to: "+pythonPath);
         props.setProperty("python.path", pythonPath);
 
         // creating the H5PAccess class using the factory design pattern
         H5PTranslatorFactory factory = new H5PTranslatorFactory();
         H5PTranslator h5ptrans = factory.create();
+
+        h5ptrans.open("U:\\source\\MedTec\\H5PTranslator\\data\\course-presentation-36.h5p", "U:\\source\\MedTec\\H5PTranslator\\data\\course-presentation-36_DE.h5p");
 
         System.out.println("Anfang vom Öffnen");
 

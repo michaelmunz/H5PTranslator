@@ -4,11 +4,11 @@ import shutil
 from h5p_python.h5ptranslate import H5PTranslator, H5PTranslatorImpl
 
 h5ptrans = H5PTranslatorImpl()
-#ori_file = os.path.abspath(r"./data/course-presentation-36.h5p")
-#translate_file = os.path.abspath(r"./data/course-presentation-36_DE.h5p")
+ori_file = os.path.abspath(r"./data/course-presentation-36.h5p")
+translate_file = os.path.abspath(r"./data/course-presentation-36_DE.h5p")
 
-ori_file = os.path.abspath(r"./data/content.json")
-translate_file = os.path.abspath(r"./data/content_DE.json")
+#ori_file = os.path.abspath(r"./data/content.json")
+#translate_file = os.path.abspath(r"./data/content_DE.json")
 
 h5ptrans.open(ori_file, translate_file)
 
