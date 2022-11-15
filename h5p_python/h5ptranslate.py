@@ -43,17 +43,30 @@ class ElementImpl(Element):
     def getText(self):
         text = self.data['action']['params'].get('text', None)
         if text is None:
-            text = self.data['action']['params'].get('question', '')
+            text = self.data['action']['params'].get('question', None)
+        if text is None:
+            text = self.data['action']['params'].get('textField', None)
+
+        if text is None:
+            text = ''
 
         return text
 
     def setText(self, text):
         cur_text = self.data['action']['params'].get('text', None)
-        if cur_text is None:
-            self.data['action']['params']['question'] = text
-        else:
+        if cur_text is not None:
             self.data['action']['params']['text'] = text
+            return
 
+        cur_text = self.data['action']['params'].get('question', None)
+        if cur_text is not None:
+            self.data['action']['params']['question'] = text
+            return
+
+        cur_text = self.data['action']['params'].get('textField', None)
+        if cur_text is not None:
+            self.data['action']['params']['textField'] = text
+            return
 
     def setX(self, val):
         self.data['x'] = str(val)
@@ -75,6 +88,12 @@ class ElementImpl(Element):
 
     def getID(self):
         return self.getMetaData('h5pt.id')
+
+
+    def isTextElement(self):
+        return self.data['action']['library'] != "H5P.Image 1.1" and \
+               self.data['action']['library'] != "H5P.Shape 1.0"
+
 
 
     def getMetaData(self, key):
@@ -181,10 +200,11 @@ class H5PAccessImpl():
     def parseData(self):
         self.elements_by_id = {}
         self.elements_of_slide = []
+        self.slide_of_element = {}
 
         slides = self.content['presentation']['slides']
 
-        for s in slides:
+        for slideNr,s in enumerate(slides):
             elementlist = s['elements']
             elements_of_slide = []
             for e in elementlist:
@@ -192,6 +212,7 @@ class H5PAccessImpl():
                 el.verifyID()
                 elements_of_slide.append(el)
                 self.elements_by_id[el.getID()] = el
+                self.slide_of_element[el.getID()] = slideNr
             self.elements_of_slide.append(elements_of_slide)
 
 
@@ -209,6 +230,8 @@ class H5PAccessImpl():
         for id in translated_elementIDs:
             self.getElementByID(id).set_data_to_merge(merge_data[id])
 
+    def getSlideForElementID(self, id):
+        return self.slide_of_element[id]
 
     def getTempDir(self):
         return self.tempdir.getPath()
@@ -273,7 +296,7 @@ class H5PTranslatorImpl(H5PTranslator):
         trans_el = self.access_translate.getAllElements()
 
         for e in trans_el.values():
-            if e.getText()=="":
+            if not e.isTextElement():
                 continue
             if isTranslated == True and e.getHash() is not None:
                 ids.append(e.getID())
@@ -324,6 +347,12 @@ class H5PTranslatorImpl(H5PTranslator):
 
     def getTemporaryDir_translate(self):
         return self.access_translate.getTempDir()
+
+    def getSlideForElementID_original(self, id):
+        return self.access_ori.getSlideForElementID(id)
+
+    def getSlideForElementID_translate(self, id):
+        return self.access_translate.getSlideForElementID(id)
 
 
     def setTranslation(self, id, text_translated):

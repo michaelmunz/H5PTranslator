@@ -48,11 +48,11 @@ class MainGUI(tk.Tk):
         self.btn_replace_images.grid(row=4,column=0, columnspan=2)
 
         ttk.Label(text="Untranslated IDs:").grid(row=5,column=0, columnspan=2)
-        self.txt_untranslated_ids = tk.Text(height=10, width=40)
+        self.txt_untranslated_ids = tk.Text(height=10, width=60)
         self.txt_untranslated_ids.grid(row=6,column=0, columnspan=2)
 
         ttk.Label(text="Modified IDs:").grid(row=7,column=0, columnspan=2)
-        self.txt_modified_ids = tk.Text(height=10, width=40)
+        self.txt_modified_ids = tk.Text(height=10, width=60)
         self.txt_modified_ids.grid(row=8,column=0, columnspan=2)
 
 
@@ -97,11 +97,13 @@ class MainGUI(tk.Tk):
         untranslated_ids = self.h5ptrans.getUntranslatedElementIDs()
         modified_ids = self.h5ptrans.getModifiedElementIDs()
         self.txt_untranslated_ids.delete("1.0", "end")
-        for t in untranslated_ids:
+        for id in untranslated_ids:
+            t = "Slide: {} (id: {})".format(self.h5ptrans.getSlideForElementID_original(id), id)
             self.txt_untranslated_ids.insert(tk.END, t + "\n")
 
         self.txt_modified_ids.delete("1.0", "end")
-        for t in modified_ids:
+        for id in modified_ids:
+            t = "Slide: {} (id: {})".format(self.h5ptrans.getSlideForElementID_original(id), id)
             self.txt_modified_ids.insert(tk.END, t + "\n")
 
 
@@ -121,8 +123,6 @@ class MainGUI(tk.Tk):
 
     def do_translate(self):
         ids_to_translate = self.h5ptrans.getUntranslatedElementIDs() + self.h5ptrans.getModifiedElementIDs()
-        if len(ids_to_translate)==0:
-            return
 
         self.translate_thread = Thread(target=self.translate_worker, args=(ids_to_translate,))
         self.translate_thread.start()
