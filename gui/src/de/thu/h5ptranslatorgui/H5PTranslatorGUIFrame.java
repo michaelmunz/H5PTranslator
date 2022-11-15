@@ -6,10 +6,30 @@ import de.thu.h5ptranslate.H5PTranslatorFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Scanner;
 
 public class H5PTranslatorGUIFrame extends JFrame {
+
+    H5PTranslatorGUINavigation GUINavigation;
+    H5PTranslatorGUITranslation GUITranslation;
+
+    H5PTranslator h5ptrans;
+
+    boolean fileOpen = false;
+
+    JSplitPane pSplit;
+    JPanel pLeft, pRight;
+    File currentDirectory;
+    String inFile = "", outFile = "";
+
+    String[] languages = {"EN", "DE", "HU"};
+
+    int selectedInLanguage = 0, selectedOutLanguage = 1;
+
+    int slideNr = 1;
 
     H5PTranslatorGUIFrame() {
         super("MedTec+");
@@ -19,57 +39,170 @@ public class H5PTranslatorGUIFrame extends JFrame {
         try {
             pythonPath = new File(System.getProperty("user.dir") + "/..").getCanonicalPath();
         } catch (IOException i) {
+            System.out.println("IOException");
         }
         System.out.println("Setting python.path to: "+pythonPath);
         props.setProperty("python.path", pythonPath);
 
+        try {
+            File myObj = new File("startDirectory.txt");
+            Scanner myReader = new Scanner(myObj);
+            currentDirectory = new File(myReader.nextLine());
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("FileNotFoundException");
+            e.printStackTrace();
+        }
+
         // creating the H5PAccess class using the factory design pattern
         H5PTranslatorFactory factory = new H5PTranslatorFactory();
-        H5PTranslator h5ptrans = factory.create();
+        h5ptrans = factory.create();
 
         h5ptrans.open("U:\\source\\MedTec\\H5PTranslator\\data\\course-presentation-36.h5p", "U:\\source\\MedTec\\H5PTranslator\\data\\course-presentation-36_DE.h5p");
 
-        System.out.println("Anfang vom Öffnen");
-
-
-
-
-
-        JMenuBar menuBar = new JMenuBar();
-        menuBar.add(new JMenu("File"));
-        menuBar.add(new JMenu("Edit"));
-        menuBar.add(new JMenu("Navigate"));
-        menuBar.add(new JMenu("Tools"));
-        setJMenuBar(menuBar);
-
-        JPanel pLeft = new JPanel();
-        pLeft.setBackground(Color.GRAY);
-        pLeft.add(new H5PTranslatorGUINavigation(h5ptrans));
-
-        JPanel pRight = new JPanel();
-        pRight.setBackground(Color.GRAY);
-        pRight.add(new H5PTranslatorGUITranslate(h5ptrans));
-
-        JSplitPane pSplit = new JSplitPane();
-        pSplit.setDividerLocation(0.15);
-        pSplit.setDividerSize(1);
-        pSplit.add(pLeft, JSplitPane.LEFT);
-        pSplit.add(pRight, JSplitPane.RIGHT);
-        add(pSplit);
+        paintNew();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent e) {
-                h5ptrans.close(false);
-                System.exit(0);
+                GUINavigation.closeApp();
             }
         });
 
         setResizable(false);
-        setSize(1980, 1024);
+        setSize(1900, 1000);
         setVisible(true);
     }
 
-    void newSlide(int slideNr) {
+    public void paintNew() {
 
+        getContentPane().removeAll();
+
+
+        pSplit = new JSplitPane();
+        pSplit.setDividerLocation(0.15);
+        pSplit.setDividerSize(1);
+
+        GUINavigation = new H5PTranslatorGUINavigation(this);
+        pLeft = new JPanel();
+        pLeft.setBackground(Color.GRAY);
+        pLeft.add(GUINavigation);
+        pSplit.add(pLeft, JSplitPane.LEFT);
+
+        pRight = new JPanel();
+        pRight.setBackground(Color.GRAY);
+        if (isFileOpen()) {
+            GUITranslation = new H5PTranslatorGUITranslation(this);
+            pRight.add(GUITranslation);
+
+        } else {
+            JLabel j = new JLabel("Please check the language you want to translate to and then load a file of the form xyz_EN.json etc.");
+            j.setForeground(Color.red);
+            j.setFont(new Font("TimesRoman", Font.PLAIN, 30));
+            pRight.add(j);
+        }
+        pSplit.add(pRight, JSplitPane.RIGHT);
+
+
+        add(pSplit);
+        validate();
+        repaint();
     }
+
+    public void refresh3() {
+
+        pSplit.remove(pRight);
+
+        GUITranslation = new H5PTranslatorGUITranslation(this);
+        pRight = new JPanel();
+        pRight.setBackground(Color.GRAY);
+        pRight.add(GUITranslation);
+
+        pSplit.add(pRight, JSplitPane.RIGHT);
+
+        add(pSplit);
+        validate();
+        repaint();
+    }
+
+    public H5PTranslator getH5ptrans() {
+        return h5ptrans;
+    }
+
+    public H5PTranslatorGUINavigation getGUINavigation() {
+        return GUINavigation;
+    }
+
+    public H5PTranslatorGUITranslation getGUITranslation() {
+        return GUITranslation;
+    }
+
+    public File getCurrentDirectory() {
+        return currentDirectory;
+    }
+
+    public void setCurrentDirectory(File currentDirectory) {
+        this.currentDirectory = currentDirectory;
+    }
+
+    public String getInFile() {
+        return inFile;
+    }
+
+    public String getOutFile() {
+        return outFile;
+    }
+
+    public void setInFile(String inFile) {
+        this.inFile = inFile;
+    }
+
+    public void setOutFile(String outFile) {
+        this.outFile = outFile;
+    }
+
+
+    public boolean isFileOpen() {
+        return fileOpen;
+    }
+
+    public void setFileOpen(boolean fileOpen) {
+        this.fileOpen = fileOpen;
+    }
+
+    public int getSlideNr() {
+        return slideNr;
+    }
+
+    public void setSlideNr(int slideNr) {
+        this.slideNr = slideNr;
+    }
+
+    public int getSelectedInLanguage() {
+        return selectedInLanguage;
+    }
+
+    public void setSelectedInLanguage(int selectedInLanguage) {
+        this.selectedInLanguage = selectedInLanguage;
+    }
+
+    public int getSelectedOutLanguage() {
+        return selectedOutLanguage;
+    }
+
+    public void setSelectedOutLanguage(int selectedOutLanguage) {
+        this.selectedOutLanguage = selectedOutLanguage;
+    }
+
+    public String[] getLanguages() {
+        return languages;
+    }
+
+    public String getLanguageIn() {
+        return languages[selectedInLanguage];
+    }
+
+    public String getLanguageOut() {
+        return languages[selectedOutLanguage];
+    }
+
 }

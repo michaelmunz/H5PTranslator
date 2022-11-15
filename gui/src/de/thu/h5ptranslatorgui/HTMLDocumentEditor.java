@@ -6,6 +6,9 @@ package de.thu.h5ptranslatorgui;
  *	@version: May 27, 2002
  */
 
+import de.thu.h5ptranslate.H5PTranslator;
+import de.thu.h5ptranslate.H5PTranslatorFactory;
+
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -30,8 +33,9 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
     private JTextPane textPane = new JTextPane();
     private final boolean debug = false;
     private File currentFile;
-    private final H5PTranslatorGUITranslate guiTrans;
-    private final JTextField jtf;
+
+    private H5PTranslatorGUIFrame GUIFrame;
+    private final JTextField2 jtf;
 
 
     /**
@@ -62,11 +66,11 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
             = new HTMLEditorKit.InsertHTMLTextAction("Bullets", "<li> </li>", HTML.Tag.UL, HTML.Tag.LI);
 
 
-    public HTMLDocumentEditor(H5PTranslatorGUITranslate guiTrans, JTextField jtf) {
+    public HTMLDocumentEditor(H5PTranslatorGUIFrame GUIFrame, JTextField2 jtf) {
         super("HTMLDocumentEditor");
 
         this.jtf = jtf;
-        this.guiTrans = guiTrans;
+        this.GUIFrame = GUIFrame;
 
         HTMLEditorKit editorKit = new HTMLEditorKit();
         document = (HTMLDocument) editorKit.createDefaultDocument();
@@ -91,6 +95,7 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
         JMenu saveMenu = new JMenu("Save");
         JMenu fileMenu = new JMenu("File");
         JMenu editMenu = new JMenu("Edit");
+        JMenu autoMenu = new JMenu("Auto Translate");
         JMenu colorMenu = new JMenu("Color");
         JMenu fontMenu = new JMenu("Font");
         JMenu styleMenu = new JMenu("Style");
@@ -100,6 +105,7 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
         menuBar.add(saveMenu);
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
+        menuBar.add(autoMenu);
         menuBar.add(colorMenu);
         menuBar.add(fontMenu);
         menuBar.add(styleMenu);
@@ -266,8 +272,11 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
         shortcutsItem.addActionListener(this);
         helpMenu.add(shortcutsItem);
 
+        JMenuItem googleAutoItem = new JMenuItem("Auto Translate");
+        googleAutoItem.addActionListener(this);
+        autoMenu.add(googleAutoItem);
+
         JPanel editorControlPanel = new JPanel();
-        //editorControlPanel.setLayout(new GridLayout(3,3));
         editorControlPanel.setLayout(new FlowLayout());
 
         /* JButtons */
@@ -376,6 +385,7 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
             System.out.println("when: " + when);
             System.out.println("parameter: " + parameter);
         }
+
         if (actionCommand.compareTo("New") == 0) {
             startNewDocument();
         } else if (actionCommand.compareTo("Open") == 0) {
@@ -394,7 +404,15 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
             help();
         } else if (actionCommand.compareTo("Keyboard Shortcuts") == 0) {
             showShortcuts();
+        } else if (actionCommand.compareTo("Auto Translate") == 0) {
+            autoTranslate();
         }
+    }
+
+    protected void autoTranslate() {
+        String languageIn = GUIFrame.getLanguageIn(), languageOut = GUIFrame.getLanguageOut();
+        String s = GUIFrame.getH5ptrans().getAutoTranslation(languageIn,  languageOut,  jtf.origHtmlText);
+        textPane.setText(s);
     }
 
     protected void resetUndoManager() {
@@ -410,7 +428,7 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
         HTMLEditorKit editorKit = new HTMLEditorKit();
         document = (HTMLDocument) editorKit.createDefaultDocument();
         textPane.setDocument(document);
-        textPane.setText(jtf.getText());
+        textPane.setText(jtf.getHtmlText());
         currentFile = null;
         setTitle("HTMLDocumentEditor");
         textPane.getDocument().addUndoableEditListener(undoHandler);
@@ -512,14 +530,14 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
                 StringWriter writer = new StringWriter();
                 (new HTMLEditorKit()).write(writer, document, 0, document.getLength());
                 String str = writer.toString();
-                // String str = content.getString(0, content.length() - 1);
-                // jtf.setText(document.getText(0, document.getLength()));
-                jtf.setText(str);
+                jtf.setHtmlText(str);
                 jtf.setBackground(Color.WHITE);
+                jtf.setCaretPosition(0);
+                GUIFrame.getH5ptrans().setTranslation(jtf.getID(),str);
             } catch (Exception e) {
                 System.err.print(e);
             }
-            guiTrans.closedHTMLDE();
+            GUIFrame.getGUITranslation().closedHTMLDE();
             dispose();
         }
     }

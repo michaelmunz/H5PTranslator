@@ -9,44 +9,54 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.List;
 
-public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
+public class H5PTranslatorGUITranslation extends JPanel implements FocusListener {
 
     HTMLDocumentEditor htmlDE;
     boolean htmlDocumentEditorShown = false;
-    H5PTranslator h5ptrans;
 
-    static int[] widthColumns = {250, 310, 310, 80, 100, 100};
+    static int[] widthColumns = {250, 310, 310, 100, 100};
     static int heightColumns = 50;
 
-    H5PTranslatorGUITranslate(H5PTranslator h5ptrans) {
+    H5PTranslatorGUIFrame GUIFrame;
 
-        this.h5ptrans = h5ptrans;
+    H5PTranslatorGUITranslation(H5PTranslatorGUIFrame GUIFrame) {
 
-        int slideNr = 1;
+        this.GUIFrame = GUIFrame;
+        H5PTranslator h5ptrans = GUIFrame.getH5ptrans();
+        int slideNr = GUIFrame.getSlideNr() - 1;
+
         int nrOfElements = h5ptrans.getElementsForSlide_original(slideNr).size();
         List<Element> origList = h5ptrans.getElementsForSlide_original(slideNr);
         List<Element> transList = h5ptrans.getElementsForSlide_translate(slideNr);
+        List<String> untranslatedList = h5ptrans.getUntranslatedElementIDs();
 
-        int nrRows = nrOfElements+1;
-        setLayout(new GridLayout2(nrRows, 6, 15, 10));
+        // for (int i=0; i < untranslatedList.size(); i++)  System.out.println(i);
 
-        // setSize(1920, 1080);
+        int nrRows = nrOfElements + 1;
+        setLayout(new GridLayout2(nrRows, 5, 15, 10));
+
         setBackground(Color.GRAY);
 
         tAddHeader();
         for (int i = 0; i < nrOfElements; i++) {
             Element aktElement = origList.get(i);
-            tAdd(new String[]{aktElement.getID(),
-                    aktElement.getText(),
-                    transList.get(i).getText(),
-                    "2",
-                    "3"});
+
+            String sx = "", sy = "";
+            Float f = transList.get(i).getX();
+            if (f != null)
+                sx = f.toString();
+            f = transList.get(i).getY();
+            if (f != null)
+                sy = f.toString();
+
+            boolean untranslated = untranslatedList.contains(aktElement.getID());
+            tAdd(new String[]{aktElement.getID(), aktElement.getText(), transList.get(i).getText(), sx, sy}, untranslated);
         }
     }
 
     private void increaseCounter() {
         counterComponents++;
-        if (counterComponents == 6)
+        if (counterComponents == 5)
             counterComponents = 0;
     }
 
@@ -63,25 +73,25 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
         increaseCounter();
     }
 
-    private void tAdd(String[] s) {
+    private void tAdd(String[] s, boolean untranslated) {
         tAdd(s[0]);
-        tAdd(s[1]);
+        tAdd(JTextField2.removeTags(s[1]));
 
-        JTextField j = new JTextField(s[2]);
+        JTextField2 j = new JTextField2(s[0], s[1], s[2]);
+        j.setCaretPosition(0);
         j.addFocusListener(this);
         j.setEditable(false);
+        // if (untranslated)  j.setBackground(Color.red);
         tAdd(j);
 
-        tAdd(new Button("Auto"));
         tAdd(s[3]);
         tAdd(s[4]);
     }
 
     private void tAddHeader() {
         tAdd("id");
-        tAdd("English");
-        tAdd("German");
-        tAdd("Google Translator");
+        tAdd("Original");
+        tAdd("Translated");
         tAdd("x-coordinate");
         tAdd("y-coordinate");
     }
@@ -93,9 +103,10 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
     @Override
     public void focusGained(FocusEvent e) {
         if (!htmlDocumentEditorShown) {
-            JTextField j = (JTextField) e.getComponent();
+            JTextField2 j = (JTextField2) e.getComponent();
+            j.setCaretPosition(0);
             j.setBackground(Color.PINK);
-            htmlDE = new HTMLDocumentEditor(this, j);
+            htmlDE = new HTMLDocumentEditor(GUIFrame, j);
             htmlDocumentEditorShown = true;
         }
         this.requestFocus();
@@ -104,8 +115,9 @@ public class H5PTranslatorGUITranslate extends JPanel implements FocusListener {
 
     @Override
     public void focusLost(FocusEvent e) {
-        JTextField j = (JTextField) e.getComponent();
+        JTextField2 j = (JTextField2) e.getComponent();
         j.setBackground(null);
+        j.setCaretPosition(0);
     }
 }
 
