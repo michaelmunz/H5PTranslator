@@ -23,7 +23,7 @@ public class H5PTranslatorGUITranslation extends JPanel implements FocusListener
 
         this.GUIFrame = GUIFrame;
         H5PTranslator h5ptrans = GUIFrame.getH5ptrans();
-        int slideNr = GUIFrame.getSlideNr() - 1;
+        int slideNr = GUIFrame.getSlideNr();
 
         int nrOfElements = h5ptrans.getElementsForSlide_original(slideNr).size();
         List<Element> origList = h5ptrans.getElementsForSlide_original(slideNr);

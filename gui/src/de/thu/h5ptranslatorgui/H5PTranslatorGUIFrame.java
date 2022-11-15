@@ -29,7 +29,7 @@ public class H5PTranslatorGUIFrame extends JFrame {
 
     int selectedInLanguage = 0, selectedOutLanguage = 1;
 
-    int slideNr = 1;
+    int slideNr = 0;
 
     H5PTranslatorGUIFrame() {
         super("MedTec+");
@@ -58,7 +58,6 @@ public class H5PTranslatorGUIFrame extends JFrame {
         H5PTranslatorFactory factory = new H5PTranslatorFactory();
         h5ptrans = factory.create();
 
-        h5ptrans.open("U:\\source\\MedTec\\H5PTranslator\\data\\course-presentation-36.h5p", "U:\\source\\MedTec\\H5PTranslator\\data\\course-presentation-36_DE.h5p");
 
         paintNew();
 

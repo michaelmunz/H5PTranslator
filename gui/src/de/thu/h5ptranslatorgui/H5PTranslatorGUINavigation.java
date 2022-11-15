@@ -49,8 +49,8 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
 
         int i;
         Button button ;
-        for (i = 1; i < h5ptrans.getNrOfSlides(); i++) {
-            button = new Button("Slide " + i);
+        for (i = 0; i < h5ptrans.getNrOfSlides(); i++) {
+            button = new Button("Slide " + (i+1));
             button.addActionListener(this);
             if (i == GUIFrame.getSlideNr()) {
                 button.setBackground(Color.PINK);
@@ -59,7 +59,7 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
                 button.setBackground(Color.LIGHT_GRAY);
             add(button);
         }
-        if (i % 2 == 0) {
+        if (i % 2 == 1) {
             Label label = new Label();
             label.setBackground(getBackground());
             add(label);
@@ -102,7 +102,7 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
         slideNrButton.setBackground(Color.LIGHT_GRAY);
 
         b.setBackground(Color.PINK);
-        GUIFrame.setSlideNr(Integer.parseInt(b.getLabel().substring(6)));
+        GUIFrame.setSlideNr(Integer.parseInt(b.getLabel().substring(6))-1);
         slideNrButton = b;
         GUIFrame.paintNew();
     }
