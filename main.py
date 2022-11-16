@@ -22,9 +22,10 @@ print("Ori temp dir: "+h5ptrans.getTemporaryDir_original())
 print("Translate temp dir: "+h5ptrans.getTemporaryDir_translate())
 
 print("Nr of slides: {}".format(h5ptrans.getNrOfSlides()))
-#slideNr = 1
-#print("Nr of Elements in slide nr. {}: {}".format(slideNr, len(h5ptrans.getElementsForSlide_original(slideNr))))
-#print("Text of first element: {}".format(h5ptrans.getElementsForSlide_original(slideNr)[0].getText()))
+slideNr = 0
+print("Nr of Elements in slide nr. {}: {}".format(slideNr, len(h5ptrans.getElementsForSlide_original(slideNr))))
+for cnt,e in enumerate(h5ptrans.getElementsForSlide_original(slideNr)):
+    print("Text of element {}: {}".format(cnt, e.getText()))
 
 modified_ids = h5ptrans.getModifiedElementIDs()
 untranslated_ids = h5ptrans.getUntranslatedElementIDs()

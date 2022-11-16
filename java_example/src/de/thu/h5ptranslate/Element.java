@@ -11,6 +11,7 @@ public interface Element{
 
     String getID();
     String getHash();
+    boolean isTextElement();
 
 
 }

@@ -16,7 +16,7 @@ if __name__ == "__main__":
     elif action == "replace":
         file = sys.argv[4]
         with zip.ZipFile(zip_path, 'a') as zipObj:
-            if(member_name in zipObj.filelist):
+            if member_name in zipObj.filelist:
                 zipObj.remove(member_name)
                 zipObj.write(file, member_name)
 
