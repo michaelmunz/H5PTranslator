@@ -358,7 +358,7 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
         textPane.setContentType("text/html");
         JScrollPane scrollPane = new JScrollPane(textPane);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension scrollPaneSize = new Dimension(5 * screenSize.width / 8, 5 * screenSize.height / 8);
+        Dimension scrollPaneSize = new Dimension(4 * screenSize.width / 8, 4 * screenSize.height / 8);
         scrollPane.setPreferredSize(scrollPaneSize);
 
         JPanel toolPanel = new JPanel();
@@ -371,6 +371,7 @@ public class HTMLDocumentEditor extends JFrame implements ActionListener {
         pack();
         setLocationRelativeTo(null);
         startNewDocument();
+        setResizable(false);
         setVisible(true);
     }
 

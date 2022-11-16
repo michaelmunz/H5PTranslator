@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class H5PTranslatorGUINavigation extends JPanel implements ActionListener {
 
@@ -104,7 +105,7 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
         b.setBackground(Color.PINK);
         GUIFrame.setSlideNr(Integer.parseInt(b.getLabel().substring(6))-1);
         slideNrButton = b;
-        GUIFrame.paintNew();
+        GUIFrame.paintNew(false);
     }
 
     private void doFileOperations(String s) {
@@ -170,8 +171,9 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
         dialogResult = JOptionPane.showConfirmDialog(null, "Would You like to save your chances?", "Saving", dialogButton);
         if (dialogResult == JOptionPane.YES_OPTION) {
             h5ptrans.close(true);
+            pause(1000);
             h5ptrans.open(GUIFrame.getInFile(), GUIFrame.getOutFile());
-            GUIFrame.paintNew();
+            GUIFrame.paintNew(false);
         }
     }
 
@@ -180,8 +182,9 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
         dialogResult = JOptionPane.showConfirmDialog(null, "Would You like to reload the original file (ALL YOUR CURRENT CHANGES WILL BE LOST)?", "Closing", dialogButton);
         if (dialogResult == JOptionPane.YES_OPTION) {
             h5ptrans.close(false);
-            h5ptrans.open(GUIFrame.getInFile(), GUIFrame.getOutFile());
-            GUIFrame.paintNew();
+pause(1000);
+h5ptrans.open(GUIFrame.getInFile(), GUIFrame.getOutFile());
+            GUIFrame.paintNew(false);
         }
     }
     private void loadFile() {
@@ -200,7 +203,16 @@ public class H5PTranslatorGUINavigation extends JPanel implements ActionListener
             GUIFrame.setInFile(inFile);
             GUIFrame.setOutFile(outFile);
             GUIFrame.setFileOpen(true);
-            GUIFrame.paintNew();
+            GUIFrame.paintNew(true);
         }
+    }
+
+    public void pause(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
     }
 }
