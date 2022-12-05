@@ -8,4 +8,24 @@ This work has been co-funded by the Erasmus+ Programme of the European Union
 Project website: <a href="http://medtecplus.eu/" target="_blank">http://medtecplus.eu/</a>
 
 ## Overview
-H5PTranslator can tranlate H5P content files 
+H5PTranslator can tranlate [H5P](https://h5p.org/)content files from English into a target language. For this, the H5P file needs to be downloaded and processed with H5PTranslator.
+Currently, we are using Goolge Translate for doing the translation. Images and all content is automatically translated.
+The application also does a change-tracking. This means, if you change (add, delete, modify) H5P elements in the original (english) file, H5PTranslator automatically detects which elements have been changed in the original version and updates only those elements. If you in turn change elements in the target languag file, e.g. if you are not happy with the translation or you need to change the size of an element, this will be not touched by the translator.
+
+
+## Workflow 
+Download the original (englisch) version of your H5P-based course. Start the programm and select your H5P file. Select target language and start the translation process.
+The translated file is created as a H5P output file. The name of the original file is kept and the prefix "\_<target_lang>" is added. E.g. when translating file "mycoourse.h5p" into German, the output will be "mycourse_de.h5p".
+In addition to translating the H5P content, you can also exchange the images contained in the H5P file. For this, you need to prepare a folder containing a sub-folder of the original images with the name "en" and an additional subfolder with the target language (currently, "de" or "hu").
+The image names of the target and original language should be identical. The application then matches the images of the original language with the images contained in the H5P file. For every mathing file, the target language file will be replaced in the target H5P object.
+__Please note:__ The original language (english) H5P file is also modified because we need to add change-tracking information. Therefore, you need to additionally upload also your original file (not only your translated file).
+If you change the original file and you want to update those changes in the target file, simply load again the original file. Make sure, that the already translated target file is in the same directory as your original file. Then this file will be automatically loaded and checked for changes.
+
+## Supported functionalities
+Currently the following languages are supported: 
+- German
+- Hungarian
+
+Currently, only _Course Presentation_ is supported.
+
+
