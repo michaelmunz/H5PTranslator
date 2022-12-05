@@ -138,20 +138,31 @@ class MainGUI(tk.Tk):
 
 
     def on_closing(self):
-        confirm = messagebox.askyesnocancel(
-            title="Closing",
-            message="Do you want to save the changes?",
-            default=messagebox.YES,
-            parent=self)
+        if self.h5ptrans.isopen():
+            confirm = messagebox.askyesnocancel(
+                title="Closing",
+                message="Do you want to save the changes?",
+                default=messagebox.YES,
+                parent=self)
 
-        if confirm:
-            self.h5ptrans.close(True)
-            self.destroy()
-        elif not confirm:
-            self.h5ptrans.close(False)
-            self.destroy()
+            if confirm:
+                self.h5ptrans.close(True)
+                self.destroy()
+            elif not confirm:
+                self.h5ptrans.close(False)
+                self.destroy()
+            else:
+                pass
         else:
-            pass
+            confirm = messagebox.askyesno(
+                title="Closing",
+                message="Do you want to exit the application?",
+                default=messagebox.YES,
+                parent=self)
+
+            if confirm:
+                self.destroy()
+
 
 if __name__ == "__main__":
     gui = MainGUI()
