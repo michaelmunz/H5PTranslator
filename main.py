@@ -42,8 +42,10 @@ for id in untranslated_ids:
     h5ptrans.setTranslation(id, autotranslated_text)
 
 src_path = r'C:\Users\micha\THU\H5PTranslator\_images'
-#h5ptrans.setTranslatedImages(src_path)
 
-h5ptrans.close(True)
+
+h5ptrans.replace_images("en", "de", r"C:\Users\micha\THU\H5PTranslator\data\images")
+
+h5ptrans.close(False)
 
 

@@ -7,7 +7,8 @@ import hashlib
 
 from h5p_python.temporary_directory import TemporaryDirectory
 import h5p_python.autotranslate
-import h5p_python.zip_h5p as zip
+import h5p_python.zip_h5p as zip_h5p
+import h5p_python.zipfile2 as zip
 
 class Element():
     def __init__(self, data):
@@ -151,7 +152,7 @@ class Element():
         return {"text": self.getText(), "hash": self.getHash(), "x": self.getX(), "y": self.getY(), "width" : self.getWidth(), "height": self.getHeight()}
 
 
-class H5PAccessImpl():
+class H5PAccess():
     def __init__(self):
         self.path = None
         self.elements_by_id = {}
@@ -170,7 +171,7 @@ class H5PAccessImpl():
             os.makedirs(os.path.dirname(self.content_path))
             shutil.copyfile(self.path, self.content_path)
         else:
-            zip.extract(self.path, 'content/content.json', self.tempdir.name)
+            zip_h5p.extract(self.path, 'content/content.json', self.tempdir.name)
             self.content_path = os.path.join(self.tempdir.name, "content/content.json")
         with open(self.content_path, 'r') as jsonFile:
             self.content = json.load(jsonFile)
@@ -244,7 +245,7 @@ class H5PAccessImpl():
             if self.path.endswith(".json"):
                 shutil.copyfile(self.content_path, self.path)
             else:
-                zip.replace(self.path, 'content/content.json', self.content_path)
+                zip_h5p.replace(self.path, 'content/content.json', self.content_path)
 
 
         # comment only for testing purposes
@@ -252,15 +253,15 @@ class H5PAccessImpl():
             self.tempdir.close()
 
 
-    def replaceImage(self, file):
-        filename = 'content/images/' + os.path.basename(file)
-        self.zip.replace(self.path, filename, file)
+    def replaceImage(self, file, target_filename):
+        filename = 'content/images/' + os.path.basename(target_filename)
+        zip_h5p.replace(self.path, filename, file)
 
 
 class H5PTranslator():
     def __init__(self):
-        self.access_ori = H5PAccessImpl()
-        self.access_translate = H5PAccessImpl()
+        self.access_ori = H5PAccess()
+        self.access_translate = H5PAccess()
         TemporaryDirectory.cleanup_tempdirs()
         self.auto_translator = h5p_python.autotranslate.Translator()
         self.isOpen = False
@@ -368,9 +369,47 @@ class H5PTranslator():
     def getAutoTranslation(self, source_language, target_language, text):
         if text == "":
             return text
-        return self.auto_translator.translate(source_language, target_language, text)
+        translated = self.auto_translator.translate(text, source_language, target_language)
+        return translated.text
 
-    def setTranslatedImages(self, image_path):
-        files = os.listdir(image_path)
-        for f in files:
-            self.access_translate.replaceImage(f)
+    def replace_images(self, source_language, target_language, image_path):
+        if not os.path.exists(os.path.join(image_path, source_language)):
+            return False
+        if not os.path.exists(os.path.join(image_path, target_language)):
+            return False
+
+        # match all images of source_language with the images in H5P file using hashes
+
+
+        # calculate the hashes of all images contained in h5p
+        imgFiles_ori = []
+        hashes_en = {}
+        with zip.ZipFile(self.access_ori.path, 'r') as zipFile:
+            names = zipFile.namelist()
+            for f in names:
+                if f.find("content/images")>=0:
+                    imgFiles_ori.append(f)
+            for f in imgFiles_ori:
+                img = zipFile.read(f)
+                hash = hashlib.md5(img).hexdigest()
+                hashes_en[hash] = f
+
+        # calculate all hashes of the source images
+        imgdir_source = os.path.join(image_path, source_language)
+        files_src = os.listdir(imgdir_source)
+        hashes_target = {}
+        for fn in files_src:
+            filename = os.path.join(imgdir_source, fn)
+            with open(filename, "rb") as f:
+                img = f.read()
+                hash = hashlib.md5(img).hexdigest()
+                hashes_target[hash] = os.path.join(image_path, target_language, fn)
+
+        # match the hashes and replace the files in the target h5p file
+        for h in hashes_target.keys():
+            f_h5p = hashes_en.get(h)
+            if f_h5p is not None:
+                file = hashes_target[h]
+                self.access_translate.replaceImage(f_h5p, file)
+
+        return True
