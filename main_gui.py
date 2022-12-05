@@ -11,6 +11,18 @@ class MainGUI(tk.Tk):
     def __init__(self):
         super().__init__()
 
+        menu = tk.Menu(self)
+        self.config(menu=menu)
+        filemenu = tk.Menu(menu)
+        menu.add_cascade(label="File", menu=filemenu)
+        #filemenu.add_command(label="New", command=self.reset)
+        #filemenu.add_separator()
+        filemenu.add_command(label="Exit", command=self.on_closing)
+
+        helpmenu = tk.Menu(menu)
+        menu.add_cascade(label="Help", menu=helpmenu)
+        helpmenu.add_command(label="About...", command=self.about)
+
         self.h5ptrans = H5PTranslator()
         self.geometry("800x800")
 
@@ -58,6 +70,23 @@ class MainGUI(tk.Tk):
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.translate_thread = None
+
+
+    def about(self):
+        with(open("version.txt", "r")) as f:
+            lines = f.read().splitlines()
+            version = lines[0]
+            hash = lines[1]
+            aboutmessage = """
+h5pTranslate
+
+Authors: Michael Munz, Harald Groß, THU
+Version: {}
+Git hash: {}
+https://github.com/michaelmunz/H5PTranslator/
+            """.format(version, hash)
+        messagebox.showinfo("About", message=aboutmessage)
+
 
 
 
