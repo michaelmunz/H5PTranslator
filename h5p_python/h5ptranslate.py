@@ -64,9 +64,33 @@ class Element():
         self.data['action']['params']['question'] = results.find('question').getText()
 
 
+    def getDragTextText(self):
+        feedbacks = self.data['action']['params']['overallFeedback']
+        text = "<feedbacks>"
+        for a in feedbacks:
+            fb=a.get('feedback')
+            if fb is None:
+                continue
+            text +="<feedback>"+fb+"</feedback>"
+            text +="</feedback>"
+        text += "</feedbacks>"
+        text += "<textField>" + self.data['action']['params']['textField'] + "</textField>"
+        return text
+
+
+    def setDragTextText(self, translated):
+        results = BeautifulSoup(translated, 'html.parser')
+
+        for cnt,a in enumerate(results.findAll("feedbacks")):
+            self.data['action']['params']['overallFeedback'][cnt]['feedback'] = a.find('feedback').getText()
+        self.data['action']['params']['textField'] = results.find('textfield').getText()
+
+
     def getText(self):
         if self.isMultiChoiceElement():
             text = self.getMultiChoiceText()
+        elif self.isDragTextElement():
+            text = self.getDragTextText()
         else:
             text = self.data['action']['params'].get('text', None)
             if text is None:
@@ -81,6 +105,8 @@ class Element():
     def setText(self, text):
         if self.isMultiChoiceElement():
             self.setMultiChoiceText(text)
+        elif self.isDragTextElement():
+            text = self.setDragTextText(text)
         else:
             cur_text = self.data['action']['params'].get('text', None)
             if cur_text is not None:
@@ -127,6 +153,10 @@ class Element():
 
     def isMultiChoiceElement(self):
         return self.getLibrary() == "H5P.MultiChoice 1.16"
+
+    def isDragTextElement(self):
+        return self.getLibrary() == "H5P.DragText 1.10"
+
 
 
     def getMetaData(self, key):
@@ -277,9 +307,8 @@ class H5PAccess():
             self.tempdir.close()
 
 
-    def replaceImage(self, file, target_filename):
-        filename = 'content/images/' + os.path.basename(target_filename)
-        zip_h5p.replace(self.path, filename, file)
+    def replaceImage(self, member_name, file):
+        zip_h5p.replace(self.path, member_name, file)
 
 
 class H5PTranslator():

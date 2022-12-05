@@ -43,7 +43,8 @@ for id in untranslated_ids:
 src_path = r'C:\Users\micha\THU\H5PTranslator\_images'
 
 
-#h5ptrans.replace_images("en", "de", r"C:\Users\micha\THU\H5PTranslator\data\images")
+res = h5ptrans.replace_images("en", "de", r"C:\Users\micha\THU\H5PTranslator\data\pictures")
+print(res)
 
 h5ptrans.close(True)
 
