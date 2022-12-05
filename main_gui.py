@@ -19,7 +19,7 @@ class MainGUI(tk.Tk):
         ttk.Label(text="Select target language:").grid(sticky=tk.E, row=0,column=0)
 
         self.select_target_lang = ttk.Combobox()
-        self.select_target_lang['values'] = ('de', 'en', 'it', 'hu')
+        self.select_target_lang['values'] = ('de', 'hu')
         self.select_target_lang.bind('<<ComboboxSelected>>', self.on_target_lang_selected)
         self.select_target_lang.grid(sticky=tk.W, row=0,column=1)
 
