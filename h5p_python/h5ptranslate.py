@@ -116,7 +116,6 @@ class Element():
         return self.data.get('file', '')
 
     def getID(self):
-        #return self.getMetaData('h5pt.id')
         return self.data['action']['subContentId']
 
     def getLibrary(self):
@@ -148,11 +147,6 @@ class Element():
     def getHash(self):
         return self.getMetaData('h5pt.hash')
 
-    def verifyID(self):
-        id = self.getID()
-        if id == None:
-            id = str(uuid.uuid1())
-            self.setMetaData('h5pt.id', id)
 
     def setHash(self, hash):
         self.setMetaData('h5pt.hash', hash)
@@ -237,7 +231,6 @@ class H5PAccess():
             elements_of_slide = []
             for e in elementlist:
                 el = Element(e)
-                #el.verifyID()
                 elements_of_slide.append(el)
                 self.elements_by_id[el.getID()] = el
                 self.slide_of_element[el.getID()] = slideNr
