@@ -320,11 +320,6 @@ class H5PTranslator():
         self.access_translate.close(write_changes)
         self.isOpen = False
 
-    def isOpen(self):
-        return self.isOpen
-
-
-
     def getElementIDsByTranslation(self, isTranslated):
         ids = []
         trans_el = self.access_translate.getAllElements()

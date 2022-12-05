@@ -168,7 +168,7 @@ https://github.com/michaelmunz/H5PTranslator/
                                         message="Images have been replaced.")
 
     def on_closing(self):
-        if self.h5ptrans.isOpen():
+        if self.h5ptrans.isOpen:
             confirm = messagebox.askyesnocancel(
                 title="Closing",
                 message="Do you want to save the changes?",
