@@ -11,3 +11,4 @@ __pycache__
 /dist/
 /build/
 /main_gui.exe - Verknüpfung.lnk
+/main_gui.spec
