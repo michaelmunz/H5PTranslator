@@ -8,3 +8,6 @@ __pycache__
 *.class
 /_temp.h5p.*
 /h5p_python/__init__$py.class
+/dist/
+/build/
+/main_gui.exe - Verknüpfung.lnk
