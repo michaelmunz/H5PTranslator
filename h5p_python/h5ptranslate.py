@@ -4,6 +4,7 @@ import shutil
 import uuid
 import os
 import hashlib
+from bs4 import BeautifulSoup
 
 from h5p_python.temporary_directory import TemporaryDirectory
 import h5p_python.autotranslate
@@ -38,33 +39,63 @@ class Element():
             val = float(val)
         return val
 
+
+    def getMultiChoiceText(self):
+        answers = self.data['action']['params']['answers']
+        text = "<answers>"
+        for a in answers:
+            text +="<answer><text>"+a['text']+"</text>"
+            text +="<notChosenFeedback>"+a['tipsAndFeedback']['notChosenFeedback']+"</notChosenFeedback>"
+            text +="<chosenFeedback>"+a['tipsAndFeedback']['chosenFeedback']+"</chosenFeedback>"
+            text += "<tip>" + a['tipsAndFeedback']['tip'] + "</tip>"
+            text +="</answer>"
+        text += "</answers>"
+        text += "<question>" + self.data['action']['params']['question'] + "</question>"
+        return text
+
+
+    def setMultiChoiceText(self, translated):
+        results = BeautifulSoup(translated, 'html.parser')
+
+        for cnt,a in enumerate(results.findAll("answer")):
+            self.data['action']['params']['answers'][cnt]['text'] = a.find('text').getText()
+            self.data['action']['params']['answers'][cnt]['tipsAndFeedback']['notChosenFeedback'] = a.find('notchosenfeedback').getText()
+            self.data['action']['params']['answers'][cnt]['tipsAndFeedback']['chosenFeedback'] = a.find('chosenfeedback').getText()
+        self.data['action']['params']['question'] = results.find('question').getText()
+
+
     def getText(self):
-        text = self.data['action']['params'].get('text', None)
-        if text is None:
-            text = self.data['action']['params'].get('question', None)
-        if text is None:
-            text = self.data['action']['params'].get('textField', None)
+        if self.isMultiChoiceElement():
+            text = self.getMultiChoiceText()
+        else:
+            text = self.data['action']['params'].get('text', None)
+            if text is None:
+                text = self.data['action']['params'].get('question', None)
+            if text is None:
+                text = self.data['action']['params'].get('textField', None)
 
-        if text is None:
-            text = ''
-
+            if text is None:
+                text = ''
         return text
 
     def setText(self, text):
-        cur_text = self.data['action']['params'].get('text', None)
-        if cur_text is not None:
-            self.data['action']['params']['text'] = text
-            return
+        if self.isMultiChoiceElement():
+            self.setMultiChoiceText(text)
+        else:
+            cur_text = self.data['action']['params'].get('text', None)
+            if cur_text is not None:
+                self.data['action']['params']['text'] = text
+                return
 
-        cur_text = self.data['action']['params'].get('question', None)
-        if cur_text is not None:
-            self.data['action']['params']['question'] = text
-            return
+            cur_text = self.data['action']['params'].get('question', None)
+            if cur_text is not None:
+                self.data['action']['params']['question'] = text
+                return
 
-        cur_text = self.data['action']['params'].get('textField', None)
-        if cur_text is not None:
-            self.data['action']['params']['textField'] = text
-            return
+            cur_text = self.data['action']['params'].get('textField', None)
+            if cur_text is not None:
+                self.data['action']['params']['textField'] = text
+                return
 
     def setX(self, val):
         self.data['x'] = str(val)
@@ -85,13 +116,18 @@ class Element():
         return self.data.get('file', '')
 
     def getID(self):
-        return self.getMetaData('h5pt.id')
+        #return self.getMetaData('h5pt.id')
+        return self.data['action']['subContentId']
 
+    def getLibrary(self):
+        return self.data['action']['library']
 
     def isTextElement(self):
-        return self.data['action']['library'] != "H5P.Image 1.1" and \
-               self.data['action']['library'] != "H5P.Shape 1.0"
+        return self.getLibrary() != "H5P.Image 1.1" and \
+               self.getLibrary() != "H5P.Shape 1.0"
 
+    def isMultiChoiceElement(self):
+        return self.getLibrary() == "H5P.MultiChoice 1.16"
 
 
     def getMetaData(self, key):
@@ -109,7 +145,6 @@ class Element():
         self.data['action']['metadata']['authorComments'] = jsonstr
 
 
-
     def getHash(self):
         return self.getMetaData('h5pt.hash')
 
@@ -121,10 +156,6 @@ class Element():
 
     def setHash(self, hash):
         self.setMetaData('h5pt.hash', hash)
-
-
-
-
 
     def isTextModified(self, el_translated):
         hash_current = self.calculateHash(self.getText())
@@ -206,7 +237,7 @@ class H5PAccess():
             elements_of_slide = []
             for e in elementlist:
                 el = Element(e)
-                el.verifyID()
+                #el.verifyID()
                 elements_of_slide.append(el)
                 self.elements_by_id[el.getID()] = el
                 self.slide_of_element[el.getID()] = slideNr
@@ -285,11 +316,11 @@ class H5PTranslator():
 
 
     def close(self, write_changes):
-        self.access_ori.close(write_changes)
+        self.access_ori.close(False)
         self.access_translate.close(write_changes)
         self.isOpen = False
 
-    def isopen(self):
+    def isOpen(self):
         return self.isOpen
 
 
@@ -365,11 +396,11 @@ class H5PTranslator():
         hash_str = el.calculateHash(ori_text)
         el.setHash(hash_str)
 
-
-    def getAutoTranslation(self, source_language, target_language, text):
-        if text == "":
-            return text
-        translated = self.auto_translator.translate(text, source_language, target_language)
+    def translate_element(self, source_language, target_language, id):
+        elem = self.getElementByID_original(id)
+        text = elem.getText()
+        translated = self.auto_translator.translate(text, dest=target_language, src=source_language)
+        self.setTranslation(id, translated.text)
         return translated.text
 
     def replace_images(self, source_language, target_language, image_path):
@@ -379,9 +410,7 @@ class H5PTranslator():
             return False
 
         # match all images of source_language with the images in H5P file using hashes
-
-
-        # calculate the hashes of all images contained in h5p
+        # first calculate the hashes of all images contained in h5p
         imgFiles_ori = []
         hashes_en = {}
         with zip.ZipFile(self.access_ori.path, 'r') as zipFile:

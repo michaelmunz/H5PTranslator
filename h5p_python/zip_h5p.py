@@ -27,6 +27,6 @@ def extract(zipfile, member_name, tempdirname):
 
 def replace(zipfile, member_name, file):
     with zip.ZipFile(zipfile, 'a') as zipFile:
-        if member_name in zipFile.filelist:
+        if member_name in zipFile.namelist():
             zipFile.remove(member_name)
             zipFile.write(file, member_name)
