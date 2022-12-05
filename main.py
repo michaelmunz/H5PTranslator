@@ -1,9 +1,9 @@
 import os
 import shutil
 
-from h5p_python.h5ptranslate import H5PTranslator, H5PTranslatorImpl
+from h5p_python.h5ptranslate import H5PTranslator
 
-h5ptrans = H5PTranslatorImpl()
+h5ptrans = H5PTranslator()
 ori_file = os.path.abspath(r"./data/course-presentation-36.h5p")
 translate_file = os.path.abspath(r"./data/course-presentation-36_DE.h5p")
 

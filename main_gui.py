@@ -3,7 +3,7 @@ from threading import Thread
 from tkinter import ttk
 from tkinter import filedialog as fd, messagebox
 import os
-from h5p_python.h5ptranslate import H5PTranslatorImpl
+from h5p_python.h5ptranslate import H5PTranslator
 
 
 class MainGUI(tk.Tk):
@@ -11,7 +11,7 @@ class MainGUI(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        self.h5ptrans = H5PTranslatorImpl()
+        self.h5ptrans = H5PTranslator()
         self.geometry("800x800")
 
         self.title("H5P Translator")
