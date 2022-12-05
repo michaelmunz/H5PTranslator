@@ -3,5 +3,5 @@ cd C:\Users\micha\THU\H5PTranslator
 
 git tag -l --contains HEAD > version.txt
 git rev-parse --short HEAD >> version.txt
-REM pyinstaller main_gui.py  --add-data "/my/path/to/mytextfile.txt:/path/mytextfile.txt"
+pyinstaller main_gui.py
 pause

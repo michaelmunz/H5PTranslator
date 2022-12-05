@@ -21,8 +21,12 @@ The application also does a change-tracking. This means, if you change (add, del
 The translated file is created as a H5P output file. The name of the base file is kept and the prefix "_<target_lang>" is added. E.g. when translating file "mycourse.h5p" into German, the output will be "mycourse_de.h5p".
 In addition to translating the H5P content, you can also exchange the images contained in the H5P file. For this, you need to prepare a folder containing a sub-folder of the original images with the name "en" and an additional subfolder with the target language (currently, "de" or "hu").
 The image names of the target and base language should be identical. The application then matches the images of the base language with the images contained in the H5P file. For every mathing file, the target language file will be replaced in the target H5P object.
-__Please note:__ The base language (english) H5P file is also modified because we need to add change-tracking information. Therefore, you need to additionally upload also your original file (not only your translated file).
-If you change the base file and you want to update those changes in the target file, simply load again the base file. Make sure, that the already translated target file is in the same directory as your original file. Then this file will be automatically loaded and checked for changes.
+After uploading the new translated H5P file to the LMS (e.g. Moodle), you need to use the H5P L10n functionality to change the language of the H5P elements.
+For Moodle, this works as follows:
+- Edit the H5P file in Moodle
+- Click on "Text overrides and translations"
+- Switch to the target language
+- Save 
 
 ## Supported functionalities
 Currently the following languages are supported: 
