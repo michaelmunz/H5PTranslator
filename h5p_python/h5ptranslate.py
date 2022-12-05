@@ -4,10 +4,12 @@ import shutil
 import uuid
 import os
 import hashlib
+from bs4 import BeautifulSoup
 
 from h5p_python.temporary_directory import TemporaryDirectory
 import h5p_python.autotranslate
-import h5p_python.zip_h5p as zip
+import h5p_python.zip_h5p as zip_h5p
+import h5p_python.zipfile2 as zip
 
 class Element():
     def __init__(self, data):
@@ -37,33 +39,89 @@ class Element():
             val = float(val)
         return val
 
+
+    def getMultiChoiceText(self):
+        answers = self.data['action']['params']['answers']
+        text = "<answers>"
+        for a in answers:
+            text +="<answer><text>"+a['text']+"</text>"
+            text +="<notChosenFeedback>"+a['tipsAndFeedback']['notChosenFeedback']+"</notChosenFeedback>"
+            text +="<chosenFeedback>"+a['tipsAndFeedback']['chosenFeedback']+"</chosenFeedback>"
+            text += "<tip>" + a['tipsAndFeedback']['tip'] + "</tip>"
+            text +="</answer>"
+        text += "</answers>"
+        text += "<question>" + self.data['action']['params']['question'] + "</question>"
+        return text
+
+
+    def setMultiChoiceText(self, translated):
+        results = BeautifulSoup(translated, 'html.parser')
+
+        for cnt,a in enumerate(results.findAll("answer")):
+            self.data['action']['params']['answers'][cnt]['text'] = a.find('text').getText()
+            self.data['action']['params']['answers'][cnt]['tipsAndFeedback']['notChosenFeedback'] = a.find('notchosenfeedback').getText()
+            self.data['action']['params']['answers'][cnt]['tipsAndFeedback']['chosenFeedback'] = a.find('chosenfeedback').getText()
+        self.data['action']['params']['question'] = results.find('question').getText()
+
+
+    def getDragTextText(self):
+        feedbacks = self.data['action']['params']['overallFeedback']
+        text = "<feedbacks>"
+        for a in feedbacks:
+            fb=a.get('feedback')
+            if fb is None:
+                continue
+            text +="<feedback>"+fb+"</feedback>"
+            text +="</feedback>"
+        text += "</feedbacks>"
+        text += "<textField>" + self.data['action']['params']['textField'] + "</textField>"
+        return text
+
+
+    def setDragTextText(self, translated):
+        results = BeautifulSoup(translated, 'html.parser')
+
+        for cnt,a in enumerate(results.findAll("feedbacks")):
+            self.data['action']['params']['overallFeedback'][cnt]['feedback'] = a.find('feedback').getText()
+        self.data['action']['params']['textField'] = results.find('textfield').getText()
+
+
     def getText(self):
-        text = self.data['action']['params'].get('text', None)
-        if text is None:
-            text = self.data['action']['params'].get('question', None)
-        if text is None:
-            text = self.data['action']['params'].get('textField', None)
+        if self.isMultiChoiceElement():
+            text = self.getMultiChoiceText()
+        elif self.isDragTextElement():
+            text = self.getDragTextText()
+        else:
+            text = self.data['action']['params'].get('text', None)
+            if text is None:
+                text = self.data['action']['params'].get('question', None)
+            if text is None:
+                text = self.data['action']['params'].get('textField', None)
 
-        if text is None:
-            text = ''
-
+            if text is None:
+                text = ''
         return text
 
     def setText(self, text):
-        cur_text = self.data['action']['params'].get('text', None)
-        if cur_text is not None:
-            self.data['action']['params']['text'] = text
-            return
+        if self.isMultiChoiceElement():
+            self.setMultiChoiceText(text)
+        elif self.isDragTextElement():
+            text = self.setDragTextText(text)
+        else:
+            cur_text = self.data['action']['params'].get('text', None)
+            if cur_text is not None:
+                self.data['action']['params']['text'] = text
+                return
 
-        cur_text = self.data['action']['params'].get('question', None)
-        if cur_text is not None:
-            self.data['action']['params']['question'] = text
-            return
+            cur_text = self.data['action']['params'].get('question', None)
+            if cur_text is not None:
+                self.data['action']['params']['question'] = text
+                return
 
-        cur_text = self.data['action']['params'].get('textField', None)
-        if cur_text is not None:
-            self.data['action']['params']['textField'] = text
-            return
+            cur_text = self.data['action']['params'].get('textField', None)
+            if cur_text is not None:
+                self.data['action']['params']['textField'] = text
+                return
 
     def setX(self, val):
         self.data['x'] = str(val)
@@ -84,12 +142,20 @@ class Element():
         return self.data.get('file', '')
 
     def getID(self):
-        return self.getMetaData('h5pt.id')
+        return self.data['action']['subContentId']
 
+    def getLibrary(self):
+        return self.data['action']['library']
 
     def isTextElement(self):
-        return self.data['action']['library'] != "H5P.Image 1.1" and \
-               self.data['action']['library'] != "H5P.Shape 1.0"
+        return self.getLibrary() != "H5P.Image 1.1" and \
+               self.getLibrary() != "H5P.Shape 1.0"
+
+    def isMultiChoiceElement(self):
+        return self.getLibrary() == "H5P.MultiChoice 1.16"
+
+    def isDragTextElement(self):
+        return self.getLibrary() == "H5P.DragText 1.10"
 
 
 
@@ -108,22 +174,12 @@ class Element():
         self.data['action']['metadata']['authorComments'] = jsonstr
 
 
-
     def getHash(self):
         return self.getMetaData('h5pt.hash')
 
-    def verifyID(self):
-        id = self.getID()
-        if id == None:
-            id = str(uuid.uuid1())
-            self.setMetaData('h5pt.id', id)
 
     def setHash(self, hash):
         self.setMetaData('h5pt.hash', hash)
-
-
-
-
 
     def isTextModified(self, el_translated):
         hash_current = self.calculateHash(self.getText())
@@ -151,7 +207,7 @@ class Element():
         return {"text": self.getText(), "hash": self.getHash(), "x": self.getX(), "y": self.getY(), "width" : self.getWidth(), "height": self.getHeight()}
 
 
-class H5PAccessImpl():
+class H5PAccess():
     def __init__(self):
         self.path = None
         self.elements_by_id = {}
@@ -170,7 +226,7 @@ class H5PAccessImpl():
             os.makedirs(os.path.dirname(self.content_path))
             shutil.copyfile(self.path, self.content_path)
         else:
-            zip.extract(self.path, 'content/content.json', self.tempdir.name)
+            zip_h5p.extract(self.path, 'content/content.json', self.tempdir.name)
             self.content_path = os.path.join(self.tempdir.name, "content/content.json")
         with open(self.content_path, 'r') as jsonFile:
             self.content = json.load(jsonFile)
@@ -205,7 +261,6 @@ class H5PAccessImpl():
             elements_of_slide = []
             for e in elementlist:
                 el = Element(e)
-                el.verifyID()
                 elements_of_slide.append(el)
                 self.elements_by_id[el.getID()] = el
                 self.slide_of_element[el.getID()] = slideNr
@@ -244,7 +299,7 @@ class H5PAccessImpl():
             if self.path.endswith(".json"):
                 shutil.copyfile(self.content_path, self.path)
             else:
-                zip.replace(self.path, 'content/content.json', self.content_path)
+                zip_h5p.replace(self.path, 'content/content.json', self.content_path)
 
 
         # comment only for testing purposes
@@ -252,15 +307,14 @@ class H5PAccessImpl():
             self.tempdir.close()
 
 
-    def replaceImage(self, file):
-        filename = 'content/images/' + os.path.basename(file)
-        self.zip.replace(self.path, filename, file)
+    def replaceImage(self, member_name, file):
+        zip_h5p.replace(self.path, member_name, file)
 
 
 class H5PTranslator():
     def __init__(self):
-        self.access_ori = H5PAccessImpl()
-        self.access_translate = H5PAccessImpl()
+        self.access_ori = H5PAccess()
+        self.access_translate = H5PAccess()
         TemporaryDirectory.cleanup_tempdirs()
         self.auto_translator = h5p_python.autotranslate.Translator()
         self.isOpen = False
@@ -284,14 +338,9 @@ class H5PTranslator():
 
 
     def close(self, write_changes):
-        self.access_ori.close(write_changes)
+        self.access_ori.close(False)
         self.access_translate.close(write_changes)
         self.isOpen = False
-
-    def isopen(self):
-        return self.isOpen
-
-
 
     def getElementIDsByTranslation(self, isTranslated):
         ids = []
@@ -364,13 +413,49 @@ class H5PTranslator():
         hash_str = el.calculateHash(ori_text)
         el.setHash(hash_str)
 
+    def translate_element(self, source_language, target_language, id):
+        elem = self.getElementByID_original(id)
+        text = elem.getText()
+        translated = self.auto_translator.translate(text, dest=target_language, src=source_language)
+        self.setTranslation(id, translated.text)
+        return translated.text
 
-    def getAutoTranslation(self, source_language, target_language, text):
-        if text == "":
-            return text
-        return self.auto_translator.translate(source_language, target_language, text)
+    def replace_images(self, source_language, target_language, image_path):
+        if not os.path.exists(os.path.join(image_path, source_language)):
+            return False
+        if not os.path.exists(os.path.join(image_path, target_language)):
+            return False
 
-    def setTranslatedImages(self, image_path):
-        files = os.listdir(image_path)
-        for f in files:
-            self.access_translate.replaceImage(f)
+        # match all images of source_language with the images in H5P file using hashes
+        # first calculate the hashes of all images contained in h5p
+        imgFiles_ori = []
+        hashes_en = {}
+        with zip.ZipFile(self.access_ori.path, 'r') as zipFile:
+            names = zipFile.namelist()
+            for f in names:
+                if f.find("content/images")>=0:
+                    imgFiles_ori.append(f)
+            for f in imgFiles_ori:
+                img = zipFile.read(f)
+                hash = hashlib.md5(img).hexdigest()
+                hashes_en[hash] = f
+
+        # calculate all hashes of the source images
+        imgdir_source = os.path.join(image_path, source_language)
+        files_src = os.listdir(imgdir_source)
+        hashes_target = {}
+        for fn in files_src:
+            filename = os.path.join(imgdir_source, fn)
+            with open(filename, "rb") as f:
+                img = f.read()
+                hash = hashlib.md5(img).hexdigest()
+                hashes_target[hash] = os.path.join(image_path, target_language, fn)
+
+        # match the hashes and replace the files in the target h5p file
+        for h in hashes_target.keys():
+            f_h5p = hashes_en.get(h)
+            if f_h5p is not None:
+                file = hashes_target[h]
+                self.access_translate.replaceImage(f_h5p, file)
+
+        return True

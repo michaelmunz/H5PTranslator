@@ -109,7 +109,7 @@ https://github.com/michaelmunz/H5PTranslator/
 
     def fileopen_base(self):
         self.ori_file = self.__fileopen('Open base h5p file')
-        if self.ori_file is None:
+        if self.ori_file is None or self.ori_file == "":
             return
         fname = os.path.basename(self.ori_file)
         [name, ext] = os.path.splitext(fname)
@@ -139,11 +139,7 @@ https://github.com/michaelmunz/H5PTranslator/
 
     def translate_worker(self, untranslated_ids):
         for cnt,id in enumerate(untranslated_ids):
-            elem = self.h5ptrans.getElementByID_original(id)
-            print("Autotranslating id '{}': '{}'".format(id, elem.getText()))
-            autotranslated_text = self.h5ptrans.getAutoTranslation("en", self.target_lang, elem.getText())
-            print("Result: " + autotranslated_text)
-            self.h5ptrans.setTranslation(id, autotranslated_text)
+            self.h5ptrans.translate_element("en", self.target_lang, id)
             self.progressbar.config(value=cnt/len(untranslated_ids)*100)
 
         self.progressbar.stop()
@@ -163,11 +159,16 @@ https://github.com/michaelmunz/H5PTranslator/
         if dirname == '':
             tk.messagebox.showerror(title="No images selected", message="Please select a directory containing translated images first!")
         else:
-            self.h5ptrans.setTranslatedImages(dirname)
-
+            res = self.h5ptrans.replace_images("en", self.target_lang, dirname)
+            if not res:
+                tk.messagebox.showerror(title="File error",
+                                    message="The directory does not contain the required structure: subdirectory 'en' and subdirectory '{}' are required.".format(self.target_lang))
+            else:
+                tk.messagebox.showinfo(title="Finished.",
+                                        message="Images have been replaced.")
 
     def on_closing(self):
-        if self.h5ptrans.isopen():
+        if self.h5ptrans.isOpen:
             confirm = messagebox.askyesnocancel(
                 title="Closing",
                 message="Do you want to save the changes?",

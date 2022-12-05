@@ -8,7 +8,7 @@ import os
 
 
 def zip_as_h5p(zipname, dirname):
-    with zip.ZipFile(zipname, 'w') as zipObj:
+    with zip.ZipFile(zipname, 'w') as zipFile:
        # Iterate over all the files in directory
        for folderName, subfolders, filenames in os.walk(dirname):
            for filename in filenames:
@@ -16,14 +16,17 @@ def zip_as_h5p(zipname, dirname):
                filePath = os.path.join(folderName, filename)
                # Add file to zip
                subdirname = filePath.replace(dirname, '')
-               zipObj.write(filePath, subdirname)
+               zipFile.write(filePath, subdirname)
+
+
 
 def extract(zipfile, member_name, tempdirname):
     with zip.ZipFile(zipfile, 'r') as zip_ref:
         zip_ref.extract(member_name, tempdirname)
 
+
 def replace(zipfile, member_name, file):
-    with zip.ZipFile(zipfile, 'a') as zipObj:
-        if member_name in zipObj.filelist:
-            zipObj.remove(member_name)
-            zipObj.write(file, member_name)
+    with zip.ZipFile(zipfile, 'a') as zipFile:
+        if member_name in zipFile.namelist():
+            zipFile.remove(member_name)
+            zipFile.write(file, member_name)

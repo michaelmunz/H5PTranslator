@@ -8,7 +8,7 @@ a = Analysis(
     ['main_gui.py'],
     pathex=[],
     binaries=[],
-    datas=['version.txt','.'],
+    datas=[('version.txt', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
