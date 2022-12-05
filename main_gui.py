@@ -139,11 +139,7 @@ https://github.com/michaelmunz/H5PTranslator/
 
     def translate_worker(self, untranslated_ids):
         for cnt,id in enumerate(untranslated_ids):
-            elem = self.h5ptrans.getElementByID_original(id)
-            print("Autotranslating id '{}': '{}'".format(id, elem.getText()))
-            autotranslated_text = self.h5ptrans.getAutoTranslation("en", self.target_lang, elem.getText())
-            print("Result: " + autotranslated_text)
-            self.h5ptrans.setTranslation(id, autotranslated_text)
+            self.h5ptrans.translate_element("en", self.target_lang, id)
             self.progressbar.config(value=cnt/len(untranslated_ids)*100)
 
         self.progressbar.stop()
@@ -172,7 +168,7 @@ https://github.com/michaelmunz/H5PTranslator/
                                         message="Images have been replaced.")
 
     def on_closing(self):
-        if self.h5ptrans.isopen():
+        if self.h5ptrans.isOpen():
             confirm = messagebox.askyesnocancel(
                 title="Closing",
                 message="Do you want to save the changes?",
