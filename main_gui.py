@@ -3,6 +3,7 @@ from threading import Thread
 from tkinter import ttk
 from tkinter import filedialog as fd, messagebox
 import os
+import sys
 from h5p_python.h5ptranslate import H5PTranslator
 
 
@@ -103,7 +104,13 @@ class MainGUI(tk.Tk):
 
 
     def about(self):
-        with(open("version.txt", "r")) as f:
+        try:
+            # PyInstaller creates a temp folder and stores path in _MEIPASS
+            base_path = sys._MEIPASS
+        except Exception:
+            base_path = os.path.abspath(".")
+
+        with(open(os.path.join(base_path, "version.txt"), "r")) as f:
             lines = f.read().splitlines()
             version = lines[0]
             hash = lines[1]
