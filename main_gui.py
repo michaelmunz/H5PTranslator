@@ -11,65 +11,95 @@ class MainGUI(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        menu = tk.Menu(self)
-        self.config(menu=menu)
-        filemenu = tk.Menu(menu)
-        menu.add_cascade(label="File", menu=filemenu)
-        #filemenu.add_command(label="New", command=self.reset)
-        #filemenu.add_separator()
-        filemenu.add_command(label="Exit", command=self.on_closing)
-
-        helpmenu = tk.Menu(menu)
-        menu.add_cascade(label="Help", menu=helpmenu)
-        helpmenu.add_command(label="About...", command=self.about)
 
         self.h5ptrans = H5PTranslator()
         self.geometry("800x800")
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.columnconfigure(2, weight=3)
+        self.columnconfigure(3, weight=1)
+        self.resizable(0, 0)
 
         self.title("H5P Translator")
 
-        ttk.Label(text="Select target language:").grid(sticky=tk.E, row=0,column=0)
+        button_height = 3
+        button_width = 25
+
+        padx = '3'
+        pady = '3'
+
+        curRow = 0
+        ttk.Label(text="Translate your H5P file").grid(sticky=tk.E, row=curRow, column=0, padx=padx, pady=pady)
+        curRow += 1
+
+        self.btn_about = tk.Button(text="About...", width=10, height=2,command=self.about)
+        self.btn_about.grid(row=0, column=3, columnspan=1, padx=padx, pady=pady)
+        curRow += 1
+
+        ttk.Label(text="Select target language:").grid(sticky=tk.E, row=curRow,column=1, padx=padx, pady=pady)
 
         self.select_target_lang = ttk.Combobox()
         self.select_target_lang['values'] = ('de', 'hu')
-        self.select_target_lang.bind('<<ComboboxSelected>>', self.on_target_lang_selected)
-        self.select_target_lang.grid(sticky=tk.W, row=0,column=1)
+        self.select_target_lang.grid(sticky=tk.W, row=curRow,column=2, padx=padx, pady=pady)
+        curRow += 1
+        self.select_target_lang.current(0)
 
+        self.btn_select_base_file = tk.Button(text="Select H5P base file (english)",width=button_width,height=button_height,command=self.fileopen_base)
+        self.btn_select_base_file.grid(row=curRow,column=1, columnspan=2, padx=padx, pady=pady)
+        curRow += 1
 
-        self.btn_select_base_file = tk.Button(text="Select H5P base file (english)",
-                  width=25,
-                  height=5,
-                  command=self.fileopen_base, state=tk.DISABLED
-                  )
-        self.btn_select_base_file.grid(row=1,column=0, columnspan=2)
-
-        self.btn_translate = tk.Button(text="Translate",
-                                       width=25,
-                                       height=5,
-                                       command=self.do_translate, state=tk.DISABLED
-                                       )
-        self.btn_translate.grid(row=2,column=0, columnspan=2)
+        self.btn_translate = tk.Button(text="Translate",width=button_width,height=button_height,command=self.do_translate)
+        self.btn_translate.grid(row=curRow,column=1, columnspan=2, padx=padx, pady=pady)
+        curRow += 1
         self.progressbar = ttk.Progressbar(self, orient='horizontal', mode='determinate', length=100)
-        self.progressbar.grid(row=3, column=0, columnspan=2)
+        self.progressbar.grid(row=curRow, column=1, columnspan=2, padx=padx, pady=pady)
+        curRow += 1
 
-        self.btn_replace_images = tk.Button(text="Replace images",
-                                            width=25,
-                                            height=5,
-                                            command=self.do_replace_images, state=tk.DISABLED
-                                            )
-        self.btn_replace_images.grid(row=4,column=0, columnspan=2)
+        self.btn_replace_images = tk.Button(text="Replace images",width=button_width,height=button_height,command=self.do_replace_images)
+        self.btn_replace_images.grid(row=curRow,column=1, columnspan=2, padx=padx, pady=pady)
+        curRow += 1
 
-        ttk.Label(text="Untranslated IDs:").grid(row=5,column=0, columnspan=2)
+        ttk.Label(text="Untranslated IDs:").grid(row=curRow,column=1, columnspan=2, padx=padx, pady=pady)
+        curRow += 1
         self.txt_untranslated_ids = tk.Text(height=10, width=60)
-        self.txt_untranslated_ids.grid(row=6,column=0, columnspan=2)
+        self.txt_untranslated_ids.grid(row=curRow,column=1, columnspan=2, padx=padx, pady=pady)
+        curRow += 1
 
-        ttk.Label(text="Modified IDs:").grid(row=7,column=0, columnspan=2)
+        ttk.Label(text="Modified IDs:").grid(row=curRow,column=1, columnspan=2, padx=padx, pady=pady)
+        curRow += 1
         self.txt_modified_ids = tk.Text(height=10, width=60)
-        self.txt_modified_ids.grid(row=8,column=0, columnspan=2)
+        self.txt_modified_ids.grid(row=curRow,column=1, columnspan=2, padx=padx, pady=pady)
+        curRow += 1
+
+        self.btn_close_file = tk.Button(text="Close file",width=button_width,height=button_height,command=self.close_file)
+        self.btn_close_file.grid(row=curRow, column=1, columnspan=2, padx=padx, pady=pady)
+        curRow += 1
+
 
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.translate_thread = None
+
+
+        self.setComponentStates(False)
+
+
+
+    def setComponentStates(self, open):
+        if(open):
+            self.btn_translate.config(state=tk.NORMAL)
+            self.btn_replace_images.config(state=tk.NORMAL)
+            self.btn_close_file.config(state=tk.NORMAL)
+            self.btn_select_base_file.config(state=tk.DISABLED)
+            self.select_target_lang.config(state=tk.DISABLED)
+        else:
+            self.btn_translate.config(state=tk.DISABLED)
+            self.btn_replace_images.config(state=tk.DISABLED)
+            self.btn_close_file.config(state=tk.DISABLED)
+            self.btn_select_base_file.config(state=tk.NORMAL)
+            self.select_target_lang.config(state=tk.NORMAL)
+            self.txt_untranslated_ids.delete(1.0,tk.END)
+            self.txt_modified_ids.delete(1.0,tk.END)
 
 
     def about(self):
@@ -86,13 +116,6 @@ Git hash: {}
 https://github.com/michaelmunz/H5PTranslator/
             """.format(version, hash)
         messagebox.showinfo("About", message=aboutmessage)
-
-
-
-
-    def on_target_lang_selected(self, val):
-        self.target_lang = self.select_target_lang.get()
-        self.btn_select_base_file.config(state = tk.NORMAL)
 
 
     def __fileopen(self, text):
@@ -113,13 +136,15 @@ https://github.com/michaelmunz/H5PTranslator/
             return
         fname = os.path.basename(self.ori_file)
         [name, ext] = os.path.splitext(fname)
-        translate_name = name+"_"+self.target_lang+ext
+        target_lang = self.select_target_lang.get()
+        translate_name = name+"_"+target_lang+ext
         self.translate_file = os.path.abspath(os.path.join(os.path.dirname(self.ori_file), translate_name))
-        self.btn_translate.config(state=tk.NORMAL)
         self.h5ptrans.open(self.ori_file, self.translate_file)
+        self.setComponentStates(True)
 
 
         self.update_h5pdata()
+
 
 
     def update_h5pdata(self):
@@ -139,7 +164,8 @@ https://github.com/michaelmunz/H5PTranslator/
 
     def translate_worker(self, untranslated_ids):
         for cnt,id in enumerate(untranslated_ids):
-            self.h5ptrans.translate_element("en", self.target_lang, id)
+            target_lang = self.select_target_lang.get()
+            self.h5ptrans.translate_element("en", target_lang, id)
             self.progressbar.config(value=cnt/len(untranslated_ids)*100)
 
         self.progressbar.stop()
@@ -159,15 +185,16 @@ https://github.com/michaelmunz/H5PTranslator/
         if dirname == '':
             tk.messagebox.showerror(title="No images selected", message="Please select a directory containing translated images first!")
         else:
-            res = self.h5ptrans.replace_images("en", self.target_lang, dirname)
+            res = self.h5ptrans.replace_images("en", self.select_target_lang.get(), dirname)
             if not res:
                 tk.messagebox.showerror(title="File error",
-                                    message="The directory does not contain the required structure: subdirectory 'en' and subdirectory '{}' are required.".format(self.target_lang))
+                                    message="The directory does not contain the required structure: subdirectory 'en' and subdirectory '{}' are required.".format(self.select_target_lang.get()))
             else:
                 tk.messagebox.showinfo(title="Finished.",
                                         message="Images have been replaced.")
 
-    def on_closing(self):
+
+    def close_file(self):
         if self.h5ptrans.isOpen:
             confirm = messagebox.askyesnocancel(
                 title="Closing",
@@ -177,12 +204,20 @@ https://github.com/michaelmunz/H5PTranslator/
 
             if confirm:
                 self.h5ptrans.close(True)
-                self.destroy()
-            elif not confirm:
+            elif confirm==False:
                 self.h5ptrans.close(False)
-                self.destroy()
-            else:
+            else: # if None -> cancel has been chosen
                 pass
+
+            if confirm is not None:
+                self.setComponentStates(False)
+
+            return confirm
+
+
+    def on_closing(self):
+        if self.h5ptrans.isOpen:
+            confirm = self.close_file()
         else:
             confirm = messagebox.askyesno(
                 title="Closing",
@@ -190,8 +225,8 @@ https://github.com/michaelmunz/H5PTranslator/
                 default=messagebox.YES,
                 parent=self)
 
-            if confirm:
-                self.destroy()
+        if confirm is not None:
+            self.destroy()
 
 
 if __name__ == "__main__":
