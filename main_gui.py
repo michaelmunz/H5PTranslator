@@ -232,7 +232,7 @@ https://github.com/michaelmunz/H5PTranslator/
                 default=messagebox.YES,
                 parent=self)
 
-        if confirm is not None:
+        if confirm is True:
             self.destroy()
 
 
