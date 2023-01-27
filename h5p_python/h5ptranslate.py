@@ -75,6 +75,7 @@ class Element():
             text +="</feedback>"
         text += "</feedbacks>"
         text += "<textField>" + self.data['action']['params']['textField'] + "</textField>"
+        text += "<taskDescription>" + self.data['action']['params']['taskDescription'] + "</taskDescription> "
         return text
 
 
@@ -82,8 +83,52 @@ class Element():
         results = BeautifulSoup(translated, 'html.parser')
 
         for cnt,a in enumerate(results.findAll("feedbacks")):
-            self.data['action']['params']['overallFeedback'][cnt]['feedback'] = a.find('feedback').getText()
-        self.data['action']['params']['textField'] = results.find('textfield').getText()
+            fb = a.find('feedback')
+            if fb is not None:
+                self.data['action']['params']['overallFeedback'][cnt]['feedback'] = fb.getText()
+        tf = results.find('textfield')
+        if tf is not None:
+            self.data['action']['params']['textField'] = tf.getText()
+        td = results.find('taskdescription')
+        if td is not None:
+            self.data['action']['params']['taskDescription'] = td.getText()
+
+
+    def getDragQuestionText(self):
+        return self.data['action']['metadata'].get('title', None)
+
+    def setDragQuestionText(self, translated):
+        self.data['action']['metadata']['title'] = translated
+
+    def getSingleChoiceSetText(self):
+        text = "<title>" + self.data['action']['metadata']['title'] + "</title>"
+        choices = self.data['action']['params']['choices']
+        text += "<choices>"
+        for c in choices:
+            text += "<question>"+c['question']+"</question>"
+            text += "<answers>"
+            answers = c['answers']
+            for a in answers:
+                text += a
+            text += "</answers>"
+        return text
+
+    def setSingleChoiceSetText(self, translated):
+        results = BeautifulSoup(translated, 'html.parser')
+
+        for q_cnt, c in enumerate(results.findAll("choices")):
+            q = c.find('question')
+            if q is not None:
+                self.data['action']['params']['choices'][q_cnt]['question'] = q.getText()
+            for a_cnt, a in enumerate(c.findAll("answers")):
+                a = a.find('answer')
+                if a is not None:
+                    self.data['action']['params']['choices'][q_cnt]['answers'][a_cnt] = a.getText()
+
+        tf = results.find('title')
+        if tf is not None:
+            self.data['action']['metadata']['title'] = tf.getText()
+
 
 
     def getText(self):
@@ -91,6 +136,10 @@ class Element():
             text = self.getMultiChoiceText()
         elif self.isDragTextElement():
             text = self.getDragTextText()
+        elif self.isDragQuestionElement():
+            text = self.getDragQuestionText()
+        elif self.isSingleChoiceSet():
+            text = self.getSingleChoiceSetText()
         else:
             text = self.data['action']['params'].get('text', None)
             if text is None:
@@ -104,20 +153,22 @@ class Element():
 
     def setText(self, text):
         if self.isMultiChoiceElement():
-            self.setMultiChoiceText(text)
+           self.setMultiChoiceText(text)
         elif self.isDragTextElement():
-            text = self.setDragTextText(text)
+            self.setDragTextText(text)
+        elif self.isDragQuestionElement():
+            self.setDragQuestionText(text)
+        elif self.isSingleChoiceSet():
+            self.setSingleChoiceSetText(text)
         else:
             cur_text = self.data['action']['params'].get('text', None)
             if cur_text is not None:
                 self.data['action']['params']['text'] = text
                 return
-
             cur_text = self.data['action']['params'].get('question', None)
             if cur_text is not None:
                 self.data['action']['params']['question'] = text
                 return
-
             cur_text = self.data['action']['params'].get('textField', None)
             if cur_text is not None:
                 self.data['action']['params']['textField'] = text
@@ -157,7 +208,11 @@ class Element():
     def isDragTextElement(self):
         return self.getLibrary() == "H5P.DragText 1.10"
 
+    def isDragQuestionElement(self):
+        return self.getLibrary() == "H5P.DragQuestion 1.14"
 
+    def isSingleChoiceSet(self):
+        return self.getLibrary() == "H5P.SingleChoiceSet 1.11"
 
     def getMetaData(self, key):
         metadatastr = self.data['action']['metadata'].get('authorComments', "{}")
