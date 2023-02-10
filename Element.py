@@ -30,6 +30,7 @@ class Element(ABC):
         elif library == "H5P.DragQuestion":
             return DragQuestionELement(data)
 
+
         # SingleChoiceSet
         elif library == "H5P.SingleChoiceSet":
             return SingleChoiceSetElement(data)
@@ -235,12 +236,15 @@ class SingleChoiceSetElement(Element):
         choices = self.data['action']['params']['choices']
         text += "<choices>"
         for c in choices:
-            text += "<question>"+c['question']+"</question>"
+            if c.get('question') is not None:
+                text += "<question>"+c['question']+"</question>"
             text += "<answers>"
-            answers = c['answers']
-            for a in answers:
-                text += a
+            if c.get('answers') is not None:
+                answers = c['answers']
+                for a in answers:
+                    text += "<answer>"+a+"</answer>"
             text += "</answers>"
+        text += "</choices>"
         return text
 
     def setText(self, translated):
