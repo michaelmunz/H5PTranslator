@@ -1,10 +1,10 @@
 from bs4 import BeautifulSoup
 import hashlib
 import json
+from abc import ABC, abstractmethod
 
 
-
-class Element():
+class Element(ABC):
     def __init__(self, data):
         self.data = data
 
@@ -42,7 +42,13 @@ class Element():
         else:
             return TextElement(data)
 
+    @abstractmethod
+    def getText(self):
+        pass
 
+    @abstractmethod
+    def setText(self, translated):
+        pass
 
     def getX(self):
         val = self.data.get('x', None)
@@ -67,9 +73,6 @@ class Element():
         if val is not None:
             val = float(val)
         return val
-
-
-
 
     def setX(self, val):
         self.data['x'] = str(val)
@@ -163,6 +166,7 @@ class MultiChoiceTextElement(Element):
         text += "</answers>"
         text += "<question>" + self.data['action']['params']['question'] + "</question>"
         return text
+
 
     def setText(self, translated):
         results = BeautifulSoup(translated, 'html.parser')
@@ -258,7 +262,7 @@ class TrueFalseElement(Element):
         text += "<cancellabel>" + self.data['action']['params']['confirmRetry']['cancelLabel'] + "</cancellabel>"
         text += "<confirmlabel>" + self.data['action']['params']['confirmRetry']['confirmLabel'] + "</confirmlabel>"
         text += "</confirmretry>"
-        text =  "<title>"+self.data['action']['params']['metadata']['title'] +"</title>"
+        text =  "<title>"+self.data['action']['metadata']['title'] +"</title>"
 
         return text
 
@@ -282,7 +286,7 @@ class TrueFalseElement(Element):
 
         tf = results.find('title')
         if tf is not None:
-            self.data['action']['params']['metadata']['title'] = tf.getText()
+            self.data['action']['params']['title'] = tf.getText()
 
 class TextElement(Element):
     def getText(self):

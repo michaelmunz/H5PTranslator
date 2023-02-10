@@ -60,7 +60,7 @@ class H5PAccess():
             elementlist = s['elements']
             elements_of_slide = []
             for e in elementlist:
-                el = Element(e)
+                el = Element.create_element(e)
                 if el is None:
                     continue
                 elements_of_slide.append(el)
