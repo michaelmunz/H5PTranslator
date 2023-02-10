@@ -218,8 +218,7 @@ https://github.com/michaelmunz/H5PTranslator/
 
             if confirm is not None:
                 self.setComponentStates(False)
-
-            return confirm
+            return confirm is not None
 
 
     def on_closing(self):
