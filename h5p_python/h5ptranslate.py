@@ -283,8 +283,9 @@ class H5PAccess():
         else:
             zip_h5p.extract(self.path, 'content/content.json', self.tempdir.name)
             self.content_path = os.path.join(self.tempdir.name, "content/content.json")
-        with open(self.content_path, 'r') as jsonFile:
-            self.content = json.load(jsonFile)
+        with open(self.content_path, 'r', encoding="utf8") as jsonFile:
+            contentstr = jsonFile.read()
+            self.content = json.loads(contentstr)
 
     def getNrOfSlides(self):
         return len(self.elements_of_slide)
