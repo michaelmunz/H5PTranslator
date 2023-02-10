@@ -27,6 +27,7 @@ class Element(ABC):
             return DragTextElement(data)
 
         # DragQuestionElement
+
         elif library == "H5P.DragQuestion":
             return DragQuestionELement(data)
 
@@ -265,7 +266,7 @@ class SingleChoiceSetElement(Element):
 
 class TrueFalseElement(Element):
     def getText(self):
-        text =  "<question>"+self.data['action']['params']['question'] +"</question>"
+        text = "<question>"+self.data['action']['params']['question'] +"</question>"
         text += "<confirmcheck>"
         text += "<header>" + self.data['action']['params']['confirmCheck']['header'] + "</header>"
         text += "<body>" + self.data['action']['params']['confirmCheck']['body'] + "</body>"
@@ -278,7 +279,7 @@ class TrueFalseElement(Element):
         text += "<cancellabel>" + self.data['action']['params']['confirmRetry']['cancelLabel'] + "</cancellabel>"
         text += "<confirmlabel>" + self.data['action']['params']['confirmRetry']['confirmLabel'] + "</confirmlabel>"
         text += "</confirmretry>"
-        text =  "<title>"+self.data['action']['metadata']['title'] +"</title>"
+        text += "<title>"+self.data['action']['metadata']['title'] +"</title>"
 
         return text
 
@@ -333,10 +334,8 @@ class TextElement(Element):
             text = self.data['action']['params'].get('question', None)
         if text is None:
             text = self.data['action']['params'].get('textField', None)
-
         if text is None:
             text = ''
-
         return text
 
     def setText(self, text):
