@@ -211,10 +211,20 @@ class DragTextElement(Element):
 
 class DragQuestionELement(Element):
     def getText(self):
-        return self.data['action']['metadata'].get('title', None)
+        text = "<title>" + self.data['action']['metadata']['title'] + "</title>"
+        elements = self.data['action']['params']['question']['task']['elements']
+        text += "<elements>"
+        for e in elements:
+            text += "<text>" + e['type']['params']['text'] + "</text>"
+        text += "</elements>"
+        return text
 
     def setText(self, translated):
-        self.data['action']['metadata']['title'] = translated
+        results = BeautifulSoup(translated, 'html.parser')
+        self.data['action']['metadata']['title'] = results.find('title').getText()
+        elements = results.find('elements')
+        for cnt, t in enumerate(elements.findAll("text")):
+            self.data['action']['params']['question']['task']['elements'][cnt]['type']['params']['text'] = t.getText()
 
 
 class SingleChoiceSetElement(Element):
