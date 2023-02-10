@@ -6,7 +6,7 @@ import uuid
 
 class TemporaryDirectory:
 
-    tempdir_root = os.path.abspath("h5p_python")
+    tempdir_root = os.path.abspath(".")
     temp_prefix = '_temp.h5p.'
 
     def __init__(self, postfix):
