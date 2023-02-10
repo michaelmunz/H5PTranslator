@@ -38,6 +38,8 @@ class Element(ABC):
         elif library == "H5P.TrueFalse":
             return TrueFalseElement(data)
 
+        elif library == "H5P.Blanks":
+            return BlanksElement(data)
 
         else:
             return TextElement(data)
@@ -297,6 +299,28 @@ class TrueFalseElement(Element):
         tf = results.find('title')
         if tf is not None:
             self.data['action']['params']['title'] = tf.getText()
+
+class BlanksElement(Element):
+    def getText(self):
+        text = "<title>" + self.data['action']['metadata']['title'] + "</title>"
+        text += "<questions>"
+        for q in self.data['action']['params']['questions']:
+            text += "<question>"+q+"</question>"
+        text += "</questions>"
+
+        return text
+
+    def setText(self, translated):
+        results = BeautifulSoup(translated, 'html.parser')
+        questions = results.find('questions')
+        if questions is not None:
+            for q_cnt, q in enumerate(questions.findAll("question")):
+                self.data['action']['params']['questions'][q_cnt] = q.getText()
+
+        tf = results.find('title')
+        if tf is not None:
+            self.data['action']['params']['title'] = tf.getText()
+
 
 class TextElement(Element):
     def getText(self):
