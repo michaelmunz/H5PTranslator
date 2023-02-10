@@ -146,11 +146,12 @@ https://github.com/michaelmunz/H5PTranslator/
         target_lang = self.select_target_lang.get()
         translate_name = name+"_"+target_lang+ext
         self.translate_file = os.path.abspath(os.path.join(os.path.dirname(self.ori_file), translate_name))
-        self.h5ptrans.open(self.ori_file, self.translate_file)
-        self.setComponentStates(True)
-
-
-        self.update_h5pdata()
+        try:
+            self.h5ptrans.open(self.ori_file, self.translate_file)
+            self.setComponentStates(True)
+            self.update_h5pdata()
+        except Exception as E:
+            messagebox.showerror("Error while loading", message=str(E))
 
 
 
