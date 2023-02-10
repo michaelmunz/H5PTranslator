@@ -7,6 +7,8 @@ This is part of the project MedTec+ -"medical engineering for medical profession
 This work has been co-funded by the Erasmus+ Programme of the European Union
 Project website: <a href="http://medtecplus.eu/" target="_blank">http://medtecplus.eu/</a>
 
+Releases can be downloaded from the release page as windows executable.
+
 ## Overview
 H5PTranslator can tranlate [H5P](https://h5p.org/)content files from English into a target language. For this, the H5P file needs to be downloaded and processed with H5PTranslator.
 Currently, we are using Goolge Translate for doing the translation. Images and all content is automatically translated.
