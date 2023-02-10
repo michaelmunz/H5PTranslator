@@ -2,10 +2,9 @@ import os
 import copy
 import json
 import shutil
-import h5p_python.zip_h5p as zip_h5p
-import h5p_python.Element
-import h5p_python.TemporaryDirectory
-
+import zip_h5p as zip_h5p
+from TemporaryDirectory import TemporaryDirectory
+from Element import Element
 
 class H5PAccess():
     def __init__(self):

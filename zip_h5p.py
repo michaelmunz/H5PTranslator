@@ -1,4 +1,4 @@
-import h5p_python.zipfile2 as zip
+import zipfile2 as zip
 import os
 
 # important:

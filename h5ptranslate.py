@@ -3,18 +3,18 @@ import shutil
 import os
 import hashlib
 
-import h5p_python.TemporaryDirectory
-import h5p_python.autotranslate
+from TemporaryDirectory import TemporaryDirectory
+import autotranslate
 
-import h5p_python.zipfile2 as zip
-import h5p_python.H5PAccess
+import zipfile2 as zip
+from H5PAccess import H5PAccess
 
 class H5PTranslator():
     def __init__(self):
-        self.access_ori = h5p_python.H5PAccess()
-        self.access_translate = h5p_python.H5PAccess()
-        h5p_python.TemporaryDirectory.cleanup_tempdirs()
-        self.auto_translator = h5p_python.autotranslate.Translator()
+        self.access_ori = H5PAccess()
+        self.access_translate = H5PAccess()
+        TemporaryDirectory.cleanup_tempdirs()
+        self.auto_translator = autotranslate.Translator()
         self.isOpen = False
 
 

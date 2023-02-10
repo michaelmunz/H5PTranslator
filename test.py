@@ -1,5 +1,4 @@
-import sys
-import h5p_python.zipfile2 as zip
+import zipfile2 as zip
 
 if __name__ == "__main__":
     #TODO: check arguments lenghts!

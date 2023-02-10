@@ -4,7 +4,7 @@ from tkinter import ttk
 from tkinter import filedialog as fd, messagebox
 import os
 import sys
-from h5p_python.h5ptranslate import H5PTranslator
+from h5ptranslate import H5PTranslator
 
 
 class MainGUI(tk.Tk):
