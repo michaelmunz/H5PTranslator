@@ -29,7 +29,7 @@ class TemporaryDirectory:
     def close(self):
         try:
             shutil.rmtree(self.name)
-        except:
+        except Exception as e:
             pass
 
 

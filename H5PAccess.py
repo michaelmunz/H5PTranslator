@@ -54,6 +54,9 @@ class H5PAccess():
         self.elements_of_slide = []
         self.slide_of_element = {}
 
+        if self.content.get('presentation') is None:
+            raise Exception('The file is not an H5P Course presentation!')
+
         slides = self.content['presentation']['slides']
 
         for slideNr,s in enumerate(slides):
@@ -97,7 +100,10 @@ class H5PAccess():
         if write_changes:
             #  write modified json data into file
             with open(self.content_path, 'w') as jsonFile:
-                json.dump(self.content, jsonFile)
+                try:
+                    json.dump(self.content, jsonFile)
+                except Exception as E:
+                    print("Closing file with error: "+str(E))
             if self.path.endswith(".json"):
                 shutil.copyfile(self.content_path, self.path)
             else:
