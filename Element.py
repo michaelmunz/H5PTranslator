@@ -160,15 +160,15 @@ class Element(ABC):
 class MultiChoiceTextElement(Element):
     def getText(self):
         answers = self.data['action']['params']['answers']
-        text = "<answers>"
+        text = "<answers>\n"
         for a in answers:
-            text += "<answer><text>" + a['text'] + "</text>"
-            text += "<notChosenFeedback>" + a['tipsAndFeedback']['notChosenFeedback'] + "</notChosenFeedback>"
-            text += "<chosenFeedback>" + a['tipsAndFeedback']['chosenFeedback'] + "</chosenFeedback>"
-            text += "<tip>" + a['tipsAndFeedback']['tip'] + "</tip>"
-            text += "</answer>"
-        text += "</answers>"
-        text += "<question>" + self.data['action']['params']['question'] + "</question>"
+            text += "<answer><text>" + a['text'] + "</text>\n"
+            text += "<notChosenFeedback>" + a['tipsAndFeedback']['notChosenFeedback'] + "</notChosenFeedback>\n"
+            text += "<chosenFeedback>" + a['tipsAndFeedback']['chosenFeedback'] + "</chosenFeedback>\n"
+            text += "<tip>" + a['tipsAndFeedback']['tip'] + "</tip>\n"
+            text += "</answer>\n"
+        text += "</answers>\n"
+        text += "<question>" + self.data['action']['params']['question'] + "</question>\n"
         return text
 
 
@@ -186,16 +186,15 @@ class MultiChoiceTextElement(Element):
 class DragTextElement(Element):
     def getText(self):
         feedbacks = self.data['action']['params']['overallFeedback']
-        text = "<feedbacks>"
+        text = "<feedbacks>\n"
         for a in feedbacks:
             fb=a.get('feedback')
             if fb is None:
                 continue
-            text +="<feedback>"+fb+"</feedback>"
-            text +="</feedback>"
-        text += "</feedbacks>"
-        text += "<textField>" + self.data['action']['params']['textField'] + "</textField>"
-        text += "<taskDescription>" + self.data['action']['params']['taskDescription'] + "</taskDescription> "
+            text +="<feedback>"+fb+"</feedback>\n"
+        text += "</feedbacks>\n"
+        text += "<textField>" + self.data['action']['params']['textField'] + "</textField>\n"
+        text += "<taskDescription>" + self.data['action']['params']['taskDescription'] + "</taskDescription>\n"
         return text
 
 
@@ -233,19 +232,19 @@ class DragQuestionELement(Element):
 
 class SingleChoiceSetElement(Element):
     def getText(self):
-        text = "<title>" + self.data['action']['metadata']['title'] + "</title>"
+        text = "<title>" + self.data['action']['metadata']['title'] + "</title>\n"
         choices = self.data['action']['params']['choices']
-        text += "<choices>"
+        text += "<choices>\n"
         for c in choices:
             if c.get('question') is not None:
-                text += "<question>"+c['question']+"</question>"
-            text += "<answers>"
+                text += "<question>"+c['question']+"</question>\n"
+            text += "<answers>\n"
             if c.get('answers') is not None:
                 answers = c['answers']
                 for a in answers:
-                    text += "<answer>"+a+"</answer>"
-            text += "</answers>"
-        text += "</choices>"
+                    text += "<answer>"+a+"</answer>\n"
+            text += "</answers>\n"
+        text += "</choices>\n"
         return text
 
     def setText(self, translated):
@@ -266,19 +265,19 @@ class SingleChoiceSetElement(Element):
 
 class TrueFalseElement(Element):
     def getText(self):
-        text = "<question>"+self.data['action']['params']['question'] +"</question>"
-        text += "<confirmcheck>"
-        text += "<header>" + self.data['action']['params']['confirmCheck']['header'] + "</header>"
-        text += "<body>" + self.data['action']['params']['confirmCheck']['body'] + "</body>"
-        text += "<cancellabel>" + self.data['action']['params']['confirmCheck']['cancelLabel'] + "</cancellabel>"
-        text += "<confirmlabel>" + self.data['action']['params']['confirmCheck']['confirmLabel'] + "</confirmlabel>"
-        text += "</confirmcheck>"
-        text += "<confirmretry>"
-        text += "<header>" + self.data['action']['params']['confirmRetry']['header'] + "</header>"
-        text += "<body>" + self.data['action']['params']['confirmRetry']['body'] + "</body>"
-        text += "<cancellabel>" + self.data['action']['params']['confirmRetry']['cancelLabel'] + "</cancellabel>"
-        text += "<confirmlabel>" + self.data['action']['params']['confirmRetry']['confirmLabel'] + "</confirmlabel>"
-        text += "</confirmretry>"
+        text = "<question>"+self.data['action']['params']['question'] +"</question>\n"
+        text += "<confirmcheck>\n"
+        text += "<header>" + self.data['action']['params']['confirmCheck']['header'] + "</header>\n"
+        text += "<body>" + self.data['action']['params']['confirmCheck']['body'] + "</body>\n"
+        text += "<cancellabel>" + self.data['action']['params']['confirmCheck']['cancelLabel'] + "</cancellabel>\n"
+        text += "<confirmlabel>" + self.data['action']['params']['confirmCheck']['confirmLabel'] + "</confirmlabel>\n"
+        text += "</confirmcheck>\n"
+        text += "<confirmretry>\n"
+        text += "<header>" + self.data['action']['params']['confirmRetry']['header'] + "</header>\n"
+        text += "<body>" + self.data['action']['params']['confirmRetry']['body'] + "</body>\n"
+        text += "<cancellabel>" + self.data['action']['params']['confirmRetry']['cancelLabel'] + "</cancellabel>\n"
+        text += "<confirmlabel>" + self.data['action']['params']['confirmRetry']['confirmLabel'] + "</confirmlabel>\n"
+        text += "</confirmretry>\n"
         text += "<title>"+self.data['action']['metadata']['title'] +"</title>"
 
         return text
