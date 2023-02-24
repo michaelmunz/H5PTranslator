@@ -60,7 +60,9 @@ class H5PAccess():
         slides = self.content['presentation']['slides']
 
         for slideNr,s in enumerate(slides):
-            elementlist = s['elements']
+            elementlist = s.get('elements')
+            if elementlist is None:
+                continue
             elements_of_slide = []
             for e in elementlist:
                 el = Element.create_element(e)

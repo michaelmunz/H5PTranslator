@@ -151,7 +151,7 @@ https://github.com/michaelmunz/H5PTranslator/
             self.setComponentStates(True)
             self.update_h5pdata()
         except Exception as E:
-            messagebox.showerror("Error while loading", message=str(E))
+            messagebox.showerror("Error while loading: ", message=str(E))
 
 
 
