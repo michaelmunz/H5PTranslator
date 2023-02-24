@@ -4,6 +4,22 @@ import json
 from abc import ABC, abstractmethod
 
 
+# we wrap multi information text into html tags of type span and a given class.
+# this is because google translate won't translate html tag names and we can separate the information after translating again
+def tag_begin(name):
+    return "<span class=" + name.lower() + ">"
+
+def tag_end():
+    return "</span>"
+
+def tag_getAll(base, name):
+    return base.findAll("span", name.lower())
+
+
+def tag_get(base, name):
+    return base.find("span", name.lower())
+
+
 class Element(ABC):
     def __init__(self, data):
         self.data = data
@@ -160,145 +176,146 @@ class Element(ABC):
 class MultiChoiceTextElement(Element):
     def getText(self):
         answers = self.data['action']['params']['answers']
-        text = "<answers>\n"
+        text = tag_begin("answers")
         for a in answers:
-            text += "<answer><text>" + a['text'] + "</text>\n"
-            text += "<notChosenFeedback>" + a['tipsAndFeedback']['notChosenFeedback'] + "</notChosenFeedback>\n"
-            text += "<chosenFeedback>" + a['tipsAndFeedback']['chosenFeedback'] + "</chosenFeedback>\n"
-            text += "<tip>" + a['tipsAndFeedback']['tip'] + "</tip>\n"
-            text += "</answer>\n"
-        text += "</answers>\n"
-        text += "<question>" + self.data['action']['params']['question'] + "</question>\n"
+            text += tag_begin("answer")
+            text += tag_begin("text") + a['text'] + tag_end()
+            text += tag_begin("notChosenFeedback") + a['tipsAndFeedback']['notChosenFeedback'] + tag_end()
+            text += tag_begin("chosenFeedback") + a['tipsAndFeedback']['chosenFeedback'] + tag_begin("chosenFeedback")
+            text += tag_begin("tip") + a['tipsAndFeedback']['tip'] + tag_end()
+            text += tag_end()
+        text += tag_end()
+        text += tag_begin("question") + self.data['action']['params']['question'] + tag_end()
         return text
 
 
     def setText(self, translated):
         results = BeautifulSoup(translated, 'html.parser')
 
-        for cnt,a in enumerate(results.findAll("answer")):
-            self.data['action']['params']['answers'][cnt]['text'] = a.find('text').getText()
-            self.data['action']['params']['answers'][cnt]['tipsAndFeedback']['notChosenFeedback'] = a.find('notchosenfeedback').getText()
-            self.data['action']['params']['answers'][cnt]['tipsAndFeedback']['chosenFeedback'] = a.find('chosenfeedback').getText()
-        self.data['action']['params']['question'] = results.find('question').getText()
+        for cnt,a in enumerate(tag_getAll(results, "answer")):
+            self.data['action']['params']['answers'][cnt]['text'] = tag_get(a, 'text').getText()
+            self.data['action']['params']['answers'][cnt]['tipsAndFeedback']['notChosenFeedback'] = tag_get(a, 'notchosenfeedback').getText()
+            self.data['action']['params']['answers'][cnt]['tipsAndFeedback']['chosenFeedback'] = tag_get(a, 'chosenfeedback').getText()
+        self.data['action']['params']['question'] = tag_get(results, 'question').getText()
 
 
 
 class DragTextElement(Element):
     def getText(self):
         feedbacks = self.data['action']['params']['overallFeedback']
-        text = "<feedbacks>\n"
+        text = tag_begin("feedbacks")
         for a in feedbacks:
             fb=a.get('feedback')
             if fb is None:
                 continue
-            text +="<feedback>"+fb+"</feedback>\n"
-        text += "</feedbacks>\n"
-        text += "<textField>" + self.data['action']['params']['textField'] + "</textField>\n"
-        text += "<taskDescription>" + self.data['action']['params']['taskDescription'] + "</taskDescription>\n"
+            text += tag_begin("feedback") + fb + tag_end()
+        text += tag_end()
+        text += tag_begin("textField") + self.data['action']['params']['textField'] + tag_end()
+        text += tag_begin("taskDescription") + self.data['action']['params']['taskDescription'] + tag_end()
         return text
 
 
     def setText(self, translated):
         results = BeautifulSoup(translated, 'html.parser')
 
-        for cnt,a in enumerate(results.findAll("feedbacks")):
-            fb = a.find('feedback')
+        for cnt,a in enumerate(tag_getAll(results, "feedbacks")):
+            fb = tag_get(a, 'feedback')
             if fb is not None:
                 self.data['action']['params']['overallFeedback'][cnt]['feedback'] = fb.getText()
-        tf = results.find('textfield')
+        tf = tag_get(results, 'textfield')
         if tf is not None:
             self.data['action']['params']['textField'] = tf.getText()
-        td = results.find('taskdescription')
+        td = tag_get(results, 'taskdescription')
         if td is not None:
             self.data['action']['params']['taskDescription'] = td.getText()
 
 class DragQuestionELement(Element):
     def getText(self):
-        text = "<title>" + self.data['action']['metadata']['title'] + "</title>"
+        text = tag_begin("title") + self.data['action']['metadata']['title'] + tag_end()
         elements = self.data['action']['params']['question']['task']['elements']
-        text += "<elements>"
+        text += tag_begin("elements")
         for e in elements:
-            text += "<text>" + e['type']['params']['text'] + "</text>"
-        text += "</elements>"
+            text += tag_begin("text") + e['type']['params']['text'] + tag_end()
+        text += tag_end()
         return text
 
     def setText(self, translated):
         results = BeautifulSoup(translated, 'html.parser')
-        self.data['action']['metadata']['title'] = results.find('title').getText()
-        elements = results.find('elements')
-        for cnt, t in enumerate(elements.findAll("text")):
+        self.data['action']['metadata']['title'] = tag_get(results, 'title').getText()
+        elements = tag_get(results, 'elements')
+        for cnt, t in enumerate(tag_getAll(elements, "text")):
             self.data['action']['params']['question']['task']['elements'][cnt]['type']['params']['text'] = t.getText()
 
 
 class SingleChoiceSetElement(Element):
     def getText(self):
-        text = "<title>" + self.data['action']['metadata']['title'] + "</title>\n"
+        text = tag_begin("title") + self.data['action']['metadata']['title'] + tag_end()
         choices = self.data['action']['params']['choices']
-        text += "<choices>\n"
+        text += tag_begin("choices")
         for c in choices:
             if c.get('question') is not None:
-                text += "<question>"+c['question']+"</question>\n"
-            text += "<answers>\n"
+                text += tag_begin("question")+c['question']+tag_end()
+            text += tag_begin("answers")
             if c.get('answers') is not None:
                 answers = c['answers']
                 for a in answers:
-                    text += "<answer>"+a+"</answer>\n"
-            text += "</answers>\n"
-        text += "</choices>\n"
+                    text += tag_begin("answer")+a+tag_end()
+            text += tag_end()
+        text += tag_end()
         return text
 
     def setText(self, translated):
         results = BeautifulSoup(translated, 'html.parser')
 
-        for q_cnt, c in enumerate(results.findAll("choices")):
-            q = c.find('question')
+        for q_cnt, c in enumerate(tag_getAll(results, "choices")):
+            q = tag_get(c, 'question')
             if q is not None:
                 self.data['action']['params']['choices'][q_cnt]['question'] = q.getText()
-            for a_cnt, a in enumerate(c.findAll("answers")):
-                a = a.find('answer')
+            for a_cnt, a in enumerate(tag_getAll(c, "answers")):
+                a = tag_get(a, 'answer')
                 if a is not None:
                     self.data['action']['params']['choices'][q_cnt]['answers'][a_cnt] = a.getText()
 
-        tf = results.find('title')
+        tf = tag_get(results, 'title')
         if tf is not None:
             self.data['action']['metadata']['title'] = tf.getText()
 
 class TrueFalseElement(Element):
     def getText(self):
-        text = "<question>"+self.data['action']['params']['question'] +"</question>\n"
-        text += "<confirmcheck>\n"
-        text += "<header>" + self.data['action']['params']['confirmCheck']['header'] + "</header>\n"
-        text += "<body>" + self.data['action']['params']['confirmCheck']['body'] + "</body>\n"
-        text += "<cancellabel>" + self.data['action']['params']['confirmCheck']['cancelLabel'] + "</cancellabel>\n"
-        text += "<confirmlabel>" + self.data['action']['params']['confirmCheck']['confirmLabel'] + "</confirmlabel>\n"
-        text += "</confirmcheck>\n"
-        text += "<confirmretry>\n"
-        text += "<header>" + self.data['action']['params']['confirmRetry']['header'] + "</header>\n"
-        text += "<body>" + self.data['action']['params']['confirmRetry']['body'] + "</body>\n"
-        text += "<cancellabel>" + self.data['action']['params']['confirmRetry']['cancelLabel'] + "</cancellabel>\n"
-        text += "<confirmlabel>" + self.data['action']['params']['confirmRetry']['confirmLabel'] + "</confirmlabel>\n"
-        text += "</confirmretry>\n"
-        text += "<title>"+self.data['action']['metadata']['title'] +"</title>"
+        text = tag_begin("question")+self.data['action']['params']['question'] +tag_end()
+        text += tag_begin("confirmcheck")
+        text += tag_begin("header") + self.data['action']['params']['confirmCheck']['header'] + tag_end()
+        text += tag_begin("body") + self.data['action']['params']['confirmCheck']['body'] + tag_end()
+        text += tag_begin("cancellabel") + self.data['action']['params']['confirmCheck']['cancelLabel'] + tag_end()
+        text += tag_begin("confirmlabel") + self.data['action']['params']['confirmCheck']['confirmLabel'] + tag_end()
+        text +=tag_end()
+        text += tag_begin("confirmretry")
+        text += tag_begin("header") + self.data['action']['params']['confirmRetry']['header'] + tag_end()
+        text += tag_begin("body") + self.data['action']['params']['confirmRetry']['body'] + tag_end()
+        text += tag_begin("cancellabel") + self.data['action']['params']['confirmRetry']['cancelLabel'] + tag_end()
+        text += tag_begin("confirmlabel") + self.data['action']['params']['confirmRetry']['confirmLabel'] + tag_end()
+        text += tag_end()
+        text += tag_begin("title")+self.data['action']['metadata']['title'] +tag_end()
 
         return text
 
     def setText(self, translated):
         results = BeautifulSoup(translated, 'html.parser')
-        tf = results.find('question')
+        tf = tag_get(results, 'question')
         if tf is not None:
             self.data['action']['params']['question'] = tf.getText()
-        tf = results.find('confirmcheck')
+        tf = tag_get(results, 'confirmcheck')
         if tf is not None:
-            self.data['action']['params']['confirmCheck']['header'] = tf.find("header").getText()
-            self.data['action']['params']['confirmCheck']['body'] = tf.find("body").getText()
-            self.data['action']['params']['confirmCheck']['cancelLabel'] = tf.find("cancellabel").getText()
-            self.data['action']['params']['confirmCheck']['confirmLabel'] = tf.find("confirmlabel").getText()
-        tf = results.find('confirmretry')
+            self.data['action']['params']['confirmCheck']['header'] = tag_get(tf, "header").getText()
+            self.data['action']['params']['confirmCheck']['body'] = tag_get(tf, "body").getText()
+            self.data['action']['params']['confirmCheck']['cancelLabel'] = tag_get(tf, "cancellabel").getText()
+            self.data['action']['params']['confirmCheck']['confirmLabel'] = tag_get(tf, "confirmlabel").getText()
+        tf = tag_get(results, 'confirmretry')
         if tf is not None:
-            self.data['action']['params']['confirmRetry']['header'] = tf.find("header").getText()
-            self.data['action']['params']['confirmRetry']['body'] = tf.find("body").getText()
-            self.data['action']['params']['confirmRetry']['cancelLabel'] = tf.find("cancellabel").getText()
-            self.data['action']['params']['confirmRetry']['confirmLabel'] = tf.find("confirmlabel").getText()
+            self.data['action']['params']['confirmRetry']['header'] = tag_get(tf, "header").getText()
+            self.data['action']['params']['confirmRetry']['body'] = tag_get(tf, "body").getText()
+            self.data['action']['params']['confirmRetry']['cancelLabel'] = tag_get(tf, "cancellabel").getText()
+            self.data['action']['params']['confirmRetry']['confirmLabel'] = tag_get(tf, "confirmlabel").getText()
 
         tf = results.find('title')
         if tf is not None:
@@ -306,22 +323,22 @@ class TrueFalseElement(Element):
 
 class BlanksElement(Element):
     def getText(self):
-        text = "<title>" + self.data['action']['metadata']['title'] + "</title>"
-        text += "<questions>"
+        text = tag_begin("title") + self.data['action']['metadata']['title'] + tag_end()
+        text += tag_begin("questions")
         for q in self.data['action']['params']['questions']:
-            text += "<question>"+q+"</question>"
-        text += "</questions>"
+            text += tag_begin("question")+q+tag_end()
+        text += tag_end()
 
         return text
 
     def setText(self, translated):
         results = BeautifulSoup(translated, 'html.parser')
-        questions = results.find('questions')
+        questions = tag_get(results, 'questions')
         if questions is not None:
-            for q_cnt, q in enumerate(questions.findAll("question")):
+            for q_cnt, q in enumerate(tag_getAll(questions, "question")):
                 self.data['action']['params']['questions'][q_cnt] = q.getText()
 
-        tf = results.find('title')
+        tf = tag_get(results, 'title')
         if tf is not None:
             self.data['action']['params']['title'] = tf.getText()
 
