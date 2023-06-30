@@ -112,6 +112,9 @@ class H5PTranslator():
     def translate_element(self, source_language, target_language, id):
         elem = self.getElementByID_original(id)
         text = elem.getText()
+        if text == "":
+            return ""
+
         translated = self.auto_translator.translate(text, dest=target_language, src=source_language)
         self.setTranslation(id, translated.text)
         return translated.text

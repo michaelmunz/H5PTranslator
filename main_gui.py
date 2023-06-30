@@ -37,15 +37,23 @@ class MainGUI(tk.Tk):
         self.btn_about.grid(row=0, column=3, columnspan=1, padx=padx, pady=pady)
         curRow += 1
 
-        ttk.Label(text="Select target language:").grid(sticky=tk.E, row=curRow,column=1, padx=padx, pady=pady)
 
-        self.select_target_lang = ttk.Combobox()
-        self.select_target_lang['values'] = ('de', 'hu')
-        self.select_target_lang.grid(sticky=tk.W, row=curRow,column=2, padx=padx, pady=pady)
+        ttk.Label(text="Select source language:").grid(sticky=tk.E, row=curRow,column=1, padx=padx, pady=pady)
+        self.select_source_lang = ttk.Combobox()
+        self.select_source_lang['values'] = ('en', 'de')
+        self.select_source_lang.grid(sticky=tk.W, row=curRow,column=2, padx=padx, pady=pady)
+        self.select_source_lang.current(0)
         curRow += 1
-        self.select_target_lang.current(0)
 
-        self.btn_select_base_file = tk.Button(text="Select H5P base file (english)",width=button_width,height=button_height,command=self.fileopen_base)
+
+        ttk.Label(text="Select target language:").grid(sticky=tk.E, row=curRow,column=1, padx=padx, pady=pady)
+        self.select_target_lang = ttk.Combobox()
+        self.select_target_lang['values'] = ('de', 'en', 'hu')
+        self.select_target_lang.grid(sticky=tk.W, row=curRow,column=2, padx=padx, pady=pady)
+        self.select_target_lang.current(0)
+        curRow += 1
+
+        self.btn_select_base_file = tk.Button(text="Select H5P base file",width=button_width,height=button_height,command=self.fileopen_base)
         self.btn_select_base_file.grid(row=curRow,column=1, columnspan=2, padx=padx, pady=pady)
         curRow += 1
 
@@ -93,12 +101,14 @@ class MainGUI(tk.Tk):
             self.btn_close_file.config(state=tk.NORMAL)
             self.btn_select_base_file.config(state=tk.DISABLED)
             self.select_target_lang.config(state=tk.DISABLED)
+            self.select_source_lang.config(state=tk.DISABLED)
         else:
             self.btn_translate.config(state=tk.DISABLED)
             self.btn_replace_images.config(state=tk.DISABLED)
             self.btn_close_file.config(state=tk.DISABLED)
             self.btn_select_base_file.config(state=tk.NORMAL)
             self.select_target_lang.config(state=tk.NORMAL)
+            self.select_source_lang.config(state=tk.NORMAL)
             self.txt_untranslated_ids.delete(1.0,tk.END)
             self.txt_modified_ids.delete(1.0,tk.END)
 
@@ -172,8 +182,9 @@ https://github.com/michaelmunz/H5PTranslator/
 
     def translate_worker(self, untranslated_ids):
         for cnt,id in enumerate(untranslated_ids):
+            source_lang = self.select_source_lang.get()
             target_lang = self.select_target_lang.get()
-            self.h5ptrans.translate_element("en", target_lang, id)
+            self.h5ptrans.translate_element(source_lang, target_lang, id)
             self.progressbar.config(value=cnt/len(untranslated_ids)*100)
 
         self.progressbar.stop()

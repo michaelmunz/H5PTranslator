@@ -65,12 +65,15 @@ class H5PAccess():
                 continue
             elements_of_slide = []
             for e in elementlist:
-                el = Element.create_element(e)
-                if el is None:
-                    continue
-                elements_of_slide.append(el)
-                self.elements_by_id[el.getID()] = el
-                self.slide_of_element[el.getID()] = slideNr
+                try:
+                    el = Element.create_element(e)
+                    if el is None:
+                        continue
+                    elements_of_slide.append(el)
+                    self.elements_by_id[el.getID()] = el
+                    self.slide_of_element[el.getID()] = slideNr
+                except Exception as E:
+                    print(E)
             self.elements_of_slide.append(elements_of_slide)
 
 

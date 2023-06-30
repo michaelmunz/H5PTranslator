@@ -26,6 +26,8 @@ class Element(ABC):
 
 
     def create_element(data):
+        if data.get('action', None) == None:
+            return None
         library = data['action']['library']
         # remove version number
         library = library.split(" ")[0]
