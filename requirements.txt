@@ -2,7 +2,7 @@ altgraph==0.17.3
 appdirs==1.4.4
 beautifulsoup4==4.11.1
 bs4==0.0.1
-certifi==2022.9.24
+certifi==2024.7.4
 chardet==3.0.4
 charset-normalizer==2.1.1
 colorama==0.4.5
